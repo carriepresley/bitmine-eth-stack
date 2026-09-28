@@ -2,8 +2,9 @@
 
 Runs every Monday after BitMine's weekly ETH-holdings release (usually about 8:30am ET), with a Tuesday catch-up for weeks when a holiday pushes the release back.
 
+- Public page: https://bitmine-eth-stack.vercel.app
+- GitHub: `carriepresley/bitmine-eth-stack`. It's the source of truth, and Vercel deploys the public page from its `main` branch on every push.
 - Artifact: https://claude.ai/artifact/8UXbyDDUSZaJFwTEh9r5wr (its `source/` files mirror this repo)
-- GitHub: `carriepresley/bitmine-eth-stack`. It's the source of truth once it exists; Vercel deploys from its `main` branch.
 
 ## 1. Get the source
 
@@ -98,7 +99,9 @@ First run the Artifact tool with `action: "read"` on the artifact URL. Then publ
 
 ## 7. Push
 
-If the GitHub repo is attached, commit `data/`, `artifact.html` and `index.html` with the message "Data through <as-of date>: <ETH held> ETH", then push to `main`. Vercel redeploys the public page from that push.
+If the GitHub repo is attached, commit `data/`, `artifact.html` and `index.html` with the message "Data through <as-of date>: <ETH held> ETH", then push to `main`. Vercel redeploys the public page from that push within a minute or two. Confirm that https://bitmine-eth-stack.vercel.app serves the new holdings figure.
+
+`og.jpg`, the link-preview image, carries no weekly numbers, so it doesn't need refreshing. The preview text is rebuilt with the page.
 
 ## 8. Report
 
