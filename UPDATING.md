@@ -2,109 +2,91 @@
 
 Runs every Monday after BitMine's weekly ETH-holdings release (usually about 8:30am ET), with a Tuesday catch-up for weeks when a holiday pushes the release back.
 
-Artifact: https://claude.ai/artifact/8UXbyDDUSZaJFwTEh9r5wr
-
-The project's source is published with the artifact under `source/` (same layout as this repo). That copy is what the weekly run works from.
+- Artifact: https://claude.ai/artifact/8UXbyDDUSZaJFwTEh9r5wr (its `source/` files mirror this repo)
+- GitHub: `carriepresley/bitmine-eth-stack`. It's the source of truth once it exists; Vercel deploys from its `main` branch.
 
 ## 1. Get the source
 
-Artifact tool, `action: "read"`, `url` = the artifact, `paths` =
+- If the GitHub repo is reachable (attach it with push access), clone it. The clone is the project root.
+- Otherwise, use the Artifact tool with `action: "read"` on the artifact. Pass these paths:
 
-```
-source/README.md
-source/UPDATING.md
-source/scripts/build.py
-source/src/page.html
-source/data/holdings.csv
-source/data/ledger.json
-```
+  ```
+  source/README.md
+  source/UPDATING.md
+  source/scripts/build.py
+  source/src/page.html
+  source/data/holdings.csv
+  source/data/network.json
+  ```
 
-The files land under `<out_dir>/source/...`. That `source` folder is the project root for every step below.
+  The downloaded `source` folder is the project root.
 
 ## 2. Find new releases
 
-- The last row of `data/holdings.csv` is the newest release already included (`pr_date`, `as_of`).
-- Search PR Newswire for "Bitmine Immersion Technologies (BMNR) Announces ETH Holdings" releases dated after that `pr_date`. Open each release page with WebFetch and read:
-  - release date
-  - the "as of" date and time
-  - total ETH holdings
-  - the ETH price used (and its source)
-  - the % of ETH supply and the supply figure it cites ("of N million ETH")
-  - staked ETH
-- If EDGAR already has the release as an 8-K exhibit (CIK 0001829311), confirm the ETH figure matches.
-- Never estimate or interpolate. If a figure can't be confirmed from the release itself, leave that release out and say why in the report.
-- If there is no new release yet, stop here, change nothing and report "no new release yet".
+The last row of `data/holdings.csv` is the newest release already included. Search PR Newswire for "Bitmine Immersion Technologies (BMNR) Announces ETH Holdings" releases dated after that row's `pr_date`. Open each with WebFetch and read:
+
+- the release date
+- the "as of" date and time
+- total ETH holdings
+- the ETH price used
+- the % of ETH supply and the supply figure it cites ("of N million ETH")
+- staked ETH
+- the staking yield, in the wording "7-day yield of X% (annualized)"
+
+If EDGAR (CIK 0001829311) already has the release as an 8-K exhibit, confirm the ETH figure matches. Never estimate or interpolate. If a figure can't be confirmed from the release itself, leave that release out and say why.
+
+If there's no new release yet, stop and change nothing.
 
 ## 3. Add the rows
 
-Append one row per new release to `data/holdings.csv`, oldest first, in the existing format:
+Append one row per release to `data/holdings.csv`, oldest first:
 
 ```
-pr_date,as_of,eth_held,eth_price_usd,pct_supply,staked_eth,source_type,source_url,supply_denominator
-2026-09-28,2026-09-27 3:00pm ET,6001302,2698,4.9%,5067309,primary,https://www.prnewswire.com/news-releases/...,122.1M
+pr_date,as_of,eth_held,eth_price_usd,pct_supply,staked_eth,source_type,source_url,supply_denominator,staking_yield
+2026-09-28,2026-09-27 3:00pm ET,6001302,2698,4.9%,5067309,primary,https://www.prnewswire.com/news-releases/...,122.1M,2.62
 ```
 
-- `as_of` is `YYYY-MM-DD h:mmam/pm ET`, exactly as the release states it.
-- `pct_supply` is the release's own wording (e.g. `4.9%`).
-- Leave `staked_eth` empty if the release doesn't state it.
+- `staking_yield` is the percent number only (`2.62`).
+- Leave `staked_eth` and `staking_yield` empty when the release doesn't state them. The live staking counter uses the newest row that has both.
 
-## 4. Refresh the all-time ledger
-
-WebFetch https://etherscan.io/stat/supply and update `data/ledger.json`:
-
-| Field | Etherscan line |
-| --- | --- |
-| `crowdsale` | Genesis (crowdsale) |
-| `genesisOther` | Genesis (other) |
-| `powBlock` | Mining block rewards |
-| `powUncle` | Mining uncle rewards |
-| `pos` | Eth2 staking rewards |
-| `burnt` | Burnt fees |
-| `total` | Total supply |
-| `asOf` | today's date |
-
-Check that `crowdsale + genesisOther + powBlock + powUncle + pos - burnt` equals `total` within 1 ETH. If the page won't load or the numbers don't reconcile, keep the old file and mention it.
-
-## 5. Build
+## 4. Build
 
 ```
 python3 scripts/build.py
 ```
 
-Run it from the project root. It pulls Coin Metrics daily supply and issuance and writes `artifact.html`, `index.html` and `data/site_data.json`. If it says Coin Metrics hasn't published the latest day yet, wait 30 minutes and retry, up to three times, then report.
+Run it from the project root. It pulls Coin Metrics daily supply and issuance, refreshes `data/network.json` (total ETH staked) from ultrasound.money, and writes `artifact.html`, `index.html` and `data/site_data.json`.
 
-## 6. Check
+If it says Coin Metrics hasn't published a day yet, wait 30 minutes and retry, up to three times.
 
-- Read the printed summary line. Holdings should never fall. Share equals holdings ÷ supply. The weekly add is the difference from the previous row.
-- Re-read the copy in `src/page.html` for statements the new data could make untrue, and fix only statements that are now false:
-  - "BitMine's … is more than all the ETH ever burned and more than every staking reward ever paid"
-  - "it slowed ETH buying in July and August 2026 while it bought back its own stock"
-  - "BitMine now holds … of all the ETH in existence"
+## 5. Check
 
-  Most numbers in the copy are computed from the data automatically.
+- In the printed summary line, holdings should never fall.
+- Re-read the copy in `src/page.html` and fix only a sentence that the new data made false. Most numbers are computed.
 
-## 7. Publish
+## 6. Publish
 
 First run the Artifact tool with `action: "read"` on the artifact URL. Then publish:
 
 - `file_path` = `artifact.html`
-- `url` = the artifact URL. This keeps the same link. Never publish without it.
+- `url` = the artifact URL (keeps the same link)
+- `root` = the project root
 - `label` = "Data through <as-of date>"
 - `files` =
 
-```
-{
-  "source/README.md": "README.md",
-  "source/UPDATING.md": "UPDATING.md",
-  "source/scripts/build.py": {"from": "scripts/build.py", "contentType": "text/plain"},
-  "source/src/page.html": {"from": "src/page.html", "contentType": "text/plain"},
-  "source/data/holdings.csv": "data/holdings.csv",
-  "source/data/ledger.json": "data/ledger.json"
-}
-```
+  ```
+  {"source/README.md":"README.md",
+   "source/UPDATING.md":"UPDATING.md",
+   "source/scripts/build.py":{"from":"scripts/build.py","contentType":"text/plain"},
+   "source/src/page.html":{"from":"src/page.html","contentType":"text/plain"},
+   "source/data/holdings.csv":"data/holdings.csv",
+   "source/data/network.json":"data/network.json"}
+  ```
 
-Use `root` = the project folder so the relative source paths resolve.
+## 7. Push
+
+If the GitHub repo is attached, commit `data/`, `artifact.html` and `index.html` with the message "Data through <as-of date>: <ETH held> ETH", then push to `main`. Vercel redeploys the public page from that push.
 
 ## 8. Report
 
-End with one or two lines for Carrie: the releases added, new holdings, ETH added that week, share of supply, and anything skipped and why.
+One or two lines: the releases added, new holdings, ETH added that week, share of all ETH, the staking yield, and anything skipped.

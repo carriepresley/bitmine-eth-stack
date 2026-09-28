@@ -3,11 +3,11 @@
 
 Inputs
   data/holdings.csv  one row per BitMine ETH-holdings release (source of truth)
-  data/ledger.json   Etherscan all-time ETH supply breakdown
   src/page.html      page template; the data is injected at /*__DATA__*/null
 
 Fetched
   Coin Metrics Community API: daily ETH supply (SplyCur) and issuance (IssTotNtv)
+  ultrasound.money: network-wide staked ETH (best effort; falls back to data/network.json)
 
 Outputs
   artifact.html        page fragment published to the Claude artifact
@@ -24,7 +24,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 BASE = dt.date(2025, 6, 29)       # day 0 = end of Jun 29, 2025; BitMine announced its ETH treasury Jun 30
-LONG_START = dt.date(2021, 8, 1)  # EIP-1559 burn went live Aug 5, 2021
 CM = "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics"
 
 
@@ -39,6 +38,23 @@ def cm_series(metrics, start, end):
         rows += d.get("data", [])
         url = d.get("next_page_url")
     return rows
+
+
+def network_staked():
+    """Total ETH staked network-wide (beacon chain balances). Best effort."""
+    try:
+        req = urllib.request.Request("https://ultrasound.money/api/v2/fees/supply-parts",
+                                     headers={"User-Agent": "bitmine-eth-stack/1.0"})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            v = int(json.load(r)["beaconBalancesSum"]) / 1e9
+        if v > 1e7:
+            net = {"staked": round(v), "asOf": dt.date.today().isoformat(), "source": "https://ultrasound.money"}
+            (ROOT / "data/network.json").write_text(json.dumps(net, indent=2) + "\n")
+            return net
+    except Exception as e:  # noqa: BLE001 - keep the build going without it
+        print(f"note: ultrasound.money unavailable ({e}); using the saved network figure")
+    f = ROOT / "data/network.json"
+    return json.loads(f.read_text()) if f.exists() else None
 
 
 def main():
@@ -71,23 +87,12 @@ def main():
         prs.append([(a - BASE).days, r["pr_date"], a.isoformat(), r["as_of"][11:], int(r["eth_held"]),
                     float(r["eth_price_usd"]), r["pct_supply"],
                     int(r["staked_eth"]) if r["staked_eth"] else None,
-                    r["source_url"], r.get("supply_denominator", "")])
+                    r["source_url"], r.get("supply_denominator", ""),
+                    float(r["staking_yield"]) if r.get("staking_yield") else None])
 
-    lr = cm_series("SplyCur", LONG_START.isoformat(), end.isoformat())
-    LS = {r["time"][:10]: float(r["SplyCur"]) for r in lr if r.get("SplyCur")}
-    pts, d = [], end
-    while d >= LONG_START:
-        if d.isoformat() not in LS:
-            sys.exit(f"Coin Metrics long-run series is missing {d}")
-        pts.append(round(LS[d.isoformat()]))
-        d -= dt.timedelta(7)
-    pts.reverse()
-    long_start = (end - dt.timedelta(7 * (len(pts) - 1))).isoformat()
-
-    ledger = json.load(open(ROOT / "data/ledger.json"))
+    network = network_staked()
     out = {"asOf": rows[-1]["pr_date"], "base": BASE.isoformat(),
-           "supply": supply, "iss": iss, "burn": burn, "prs": prs,
-           "long": {"start": long_start, "step": 7, "v": pts}, "ledger": ledger}
+           "supply": supply, "iss": iss, "burn": burn, "prs": prs, "network": network}
     blob = json.dumps(out, separators=(",", ":"))
     (ROOT / "data/site_data.json").write_text(blob + "\n")
 
