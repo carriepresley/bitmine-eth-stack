@@ -17,6 +17,7 @@ Runs every Monday after BitMine's weekly ETH-holdings release (usually about 8:3
   source/src/page.html
   source/data/holdings.csv
   source/data/network.json
+  source/data/holders.json
   ```
 
   The downloaded `source` folder is the project root.
@@ -49,6 +50,17 @@ pr_date,as_of,eth_held,eth_price_usd,pct_supply,staked_eth,source_type,source_ur
 - `staking_yield` is the percent number only (`2.62`).
 - Leave `staked_eth` and `staking_yield` empty when the release doesn't state them. The live staking counter uses the newest row that has both.
 
+## 3b. Refresh the other large holders (best effort)
+
+`data/holders.json` lists the next-largest ETH holders after BitMine. The page colors them on the orb at the latest week. Refresh what you can verify and keep the rest. Each entry keeps its own `asOf` and `source`, so only change a date when you actually refreshed that entry.
+
+- **BlackRock ETHA:** WebFetch the iShares product page. Read "Basket Ether Amount" and "Shares Outstanding". ETH held = basket ETH × shares outstanding ÷ 40,000.
+  - Sanity check: net assets ÷ ETH held should be close to the ETH price.
+- **SharpLink (SBET) and The Ether Machine (ETHM):** WebFetch https://www.coingecko.com/en/treasuries/ethereum.
+- **Grayscale (ETHE + ETH) and Fidelity FETH:** update only from an issuer page or a tracker that shows ETH held. If you can't get a current figure, keep the old one.
+
+Keep the list sorted by ETH, largest first, and limit it to the top five. If another ETF or treasury company overtakes one of them, swap it in with its source.
+
 ## 4. Build
 
 ```
@@ -80,7 +92,8 @@ First run the Artifact tool with `action: "read"` on the artifact URL. Then publ
    "source/scripts/build.py":{"from":"scripts/build.py","contentType":"text/plain"},
    "source/src/page.html":{"from":"src/page.html","contentType":"text/plain"},
    "source/data/holdings.csv":"data/holdings.csv",
-   "source/data/network.json":"data/network.json"}
+   "source/data/network.json":"data/network.json",
+   "source/data/holders.json":"data/holders.json"}
   ```
 
 ## 7. Push
