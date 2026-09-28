@@ -1,4 +1,4 @@
-# BitMine's ETH Stack
+# Bitmine's ETH Stack
 
 A time-lapse of BitMine Immersion Technologies (BMNR) building its ETH position since it announced its ETH treasury strategy on June 30, 2025. The whole ETH supply is drawn as dots of 10,000 ETH, and a scrubbable timeline shows the stack growing. A second section gives a live estimate of the staking rewards BitMine earns.
 
