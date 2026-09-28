@@ -1,0 +1,1059 @@
+<title>BitMine's ETH Stack</title>
+<meta name="description" content="A time-lapse of BitMine's ETH accumulation inside the full ETH supply: new ETH minted, ETH burned, and the climb toward 5%. Updated every Monday.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Martian+Mono:wght@300..600&family=Oxanium:wght@500;600;700&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --void:#05050B;
+  --line:#1A1930;
+  --axis:#2C2A45;
+  --ink:#F3F2FB;
+  --ink-2:#B3B0CF;
+  --ink-3:#8C88B0;
+  --lime:#C6FF00;
+  --violet:#8C70FF;
+  --cyan:#1C9FD6;
+  --ember:#E8532F;
+  --f-display:"Oxanium","Segoe UI",system-ui,sans-serif;
+  --f-mono:"Martian Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --f-body:"Geist",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --gutter:clamp(16px,4vw,44px);
+  --maxw:1180px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--void)}
+body{margin:0;background:var(--void);color:var(--ink);font:400 15px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+a{color:var(--ink);text-decoration:underline;text-decoration-color:rgba(198,255,0,.45);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--lime)}
+:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gutter)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+.sw{flex:none;display:inline-block;width:9px;height:9px}
+svg [hidden]{display:none}
+.sw.lime{background:var(--lime)}.sw.violet{background:var(--violet)}.sw.cyan{background:var(--cyan)}.sw.ember{background:var(--ember)}
+
+/* ---------- observatory ---------- */
+.obs{position:relative;overflow:hidden;isolation:isolate;background:radial-gradient(130% 60% at 50% 100%,#1A0E44 0%,#0A0820 42%,var(--void) 75%)}
+#sky{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+.obs::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.02) 0 1px,transparent 1px 4px)}
+.obs-inner{position:relative;z-index:2}
+.topbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 16px;padding-block:18px 0;font:500 10.5px/1.4 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.topbar b{color:var(--ink);font-weight:500}
+.mark{display:inline-flex;align-items:center;gap:10px;color:var(--ink)}
+.mark i{width:9px;height:9px;background:var(--lime);box-shadow:0 0 10px rgba(198,255,0,.8)}
+.intro{padding-block:clamp(24px,4vw,44px) 0;max-width:940px}
+.eyebrow{margin:0 0 16px;font:500 10.5px/1.5 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+h1{margin:0;font:600 clamp(30px,5vw,58px)/1.05 var(--f-display);letter-spacing:-.005em;text-wrap:balance}
+h1 .hl{color:var(--lime);text-shadow:0 0 30px rgba(198,255,0,.35)}
+.dek{margin:18px 0 0;max-width:66ch;color:var(--ink-2);font-size:clamp(15px,1.5vw,17px)}
+.dek b{color:var(--ink);font-weight:500}
+
+.strip{display:grid;grid-template-columns:minmax(160px,1.25fr) repeat(3,minmax(0,1fr));gap:1px;margin-top:clamp(20px,3vw,32px);background:rgba(140,112,255,.26);border:1px solid rgba(140,112,255,.26)}
+.cell{min-width:0;padding:12px 14px 13px;background:rgba(6,6,17,.9)}
+.cell .k{display:flex;align-items:center;gap:8px;font:500 9.5px/1.3 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cell .v{margin-top:7px;font:500 clamp(13px,1.6vw,20px)/1.2 var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink)}
+.cell.date{grid-row:span 2;display:flex;flex-direction:column;justify-content:center}
+.cell.date .v{font-size:clamp(17px,2.1vw,26px);letter-spacing:.02em}
+.cell.date .u{margin-top:6px;font:500 10px/1.3 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.cell.bm{box-shadow:inset 0 2px 0 var(--lime)}
+@media (max-width:640px){.strip{grid-template-columns:1fr 1fr}.cell.date{grid-row:auto;grid-column:1/-1}.cell .k{white-space:normal;overflow:visible;align-items:flex-start}}
+
+.viz{position:relative;height:clamp(440px,50vw,620px)}
+.viz.narrow{height:540px}
+.vlabel{position:absolute;left:0;top:0;transform:translate(-50%,-50%);font:500 9.5px/1.3 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);white-space:nowrap;pointer-events:none}
+.vlabel.rt{transform:translate(-100%,-50%)}
+.toast{position:absolute;left:50%;top:8px;transform:translate(-50%,-6px);opacity:0;transition:opacity .25s ease,transform .25s ease;pointer-events:none;max-width:calc(100% - 16px);padding:8px 12px;border:1px solid rgba(198,255,0,.55);background:rgba(5,5,11,.9);font:500 11px/1.4 var(--f-mono);letter-spacing:.04em;color:var(--ink);text-align:center;box-shadow:0 0 24px rgba(198,255,0,.16)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast .td{color:var(--ink-3);margin-right:10px}
+
+.transport{display:grid;grid-template-columns:auto auto minmax(0,1fr);align-items:center;gap:14px 18px;padding-block:4px 30px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:11px 16px 11px 14px;border:0;background:var(--lime);color:#0A0F00;font:600 11px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap;clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,9px 100%,0 calc(100% - 9px));box-shadow:0 0 24px rgba(198,255,0,.25)}
+.btn svg{width:11px;height:11px;fill:currentColor}
+.btn:hover{filter:brightness(1.08)}
+.seg{display:inline-flex;border:1px solid var(--axis)}
+.seg button{padding:9px 11px;border:0;background:transparent;color:var(--ink-2);font:500 11px/1 var(--f-mono);cursor:pointer}
+.seg button+button{border-left:1px solid var(--axis)}
+.seg button[aria-pressed="true"]{background:rgba(198,255,0,.14);color:var(--ink)}
+.scrub{position:relative;min-width:0;padding-top:16px}
+.ticks{position:absolute;left:0;right:0;top:0;height:16px}
+.tk{position:absolute;top:0;transform:translateX(-50%);font:500 9px/1 var(--f-mono);letter-spacing:.04em;color:var(--ink-3)}
+.tk::after{content:"";position:absolute;left:50%;top:11px;width:1px;height:7px;background:var(--ink-3);opacity:.7}
+#scrub{-webkit-appearance:none;appearance:none;display:block;width:100%;height:24px;margin:0;background:transparent;cursor:pointer;--p:100%}
+#scrub::-webkit-slider-runnable-track{height:3px;background:linear-gradient(90deg,var(--lime) 0 var(--p),var(--axis) var(--p) 100%)}
+#scrub::-moz-range-track{height:3px;background:var(--axis)}
+#scrub::-moz-range-progress{height:3px;background:var(--lime)}
+#scrub::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;margin-top:-5.5px;border:0;background:var(--lime);transform:rotate(45deg);box-shadow:0 0 12px rgba(198,255,0,.8)}
+#scrub::-moz-range-thumb{width:12px;height:12px;border:0;border-radius:0;background:var(--lime);transform:rotate(45deg);box-shadow:0 0 12px rgba(198,255,0,.8)}
+.ends{display:flex;justify-content:space-between;gap:12px;font:500 9.5px/1.3 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.legend{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 20px;font:500 10px/1.4 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.legend .dim{color:var(--ink-3)}
+@media (max-width:640px){.transport{grid-template-columns:auto 1fr}.scrub{grid-column:1/-1}}
+
+/* ---------- chapters ---------- */
+.chapters{padding-block:clamp(40px,6vw,80px) 0}
+.chapter{padding-block:clamp(44px,6vw,80px) 0}
+.chapter:first-child{padding-top:0}
+.ch-eyebrow{display:flex;align-items:center;gap:12px;margin:0;font:500 10.5px/1.4 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+.ch-eyebrow::before{content:"";width:28px;height:1px;background:var(--lime)}
+h2{margin:14px 0 0;max-width:24ch;font:600 clamp(26px,3.6vw,44px)/1.08 var(--f-display);text-wrap:balance}
+.lede{margin:16px 0 0;max-width:68ch;color:var(--ink-2)}
+.lede b{color:var(--ink);font-weight:500}
+.panel{position:relative;margin-top:28px;padding:clamp(16px,2.4vw,26px);border:1px solid var(--line);background:linear-gradient(180deg,rgba(140,112,255,.055),rgba(8,8,26,.5) 60%)}
+.panel::before,.panel::after{content:"";position:absolute;width:12px;height:12px;border:solid rgba(198,255,0,.75);pointer-events:none}
+.panel::before{top:-1px;left:-1px;border-width:1px 0 0 1px}
+.panel::after{right:-1px;bottom:-1px;border-width:0 1px 1px 0}
+.panel h3{margin:0;font:600 17px/1.3 var(--f-display);letter-spacing:.01em}
+.note{margin:12px 0 0;max-width:84ch;font:400 12.5px/1.55 var(--f-body);color:var(--ink-3)}
+.keys{display:flex;flex-wrap:wrap;gap:6px 20px;margin:12px 0 4px;font:500 10.5px/1.4 var(--f-mono);letter-spacing:.03em;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:8px}
+.key .ln{display:inline-block;width:18px;height:2px}
+.key .bx{display:inline-block;width:10px;height:10px}
+.chart{position:relative;width:100%;margin-top:8px}
+.chart svg{display:block;max-width:100%;overflow:visible}
+.chart svg:focus{outline:none}
+.chart svg:focus-visible{outline:2px solid var(--lime);outline-offset:4px}
+
+.eq{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;margin-top:28px}
+.term{flex:1 1 180px;min-width:0;padding:14px 16px;border:1px solid var(--line);background:rgba(8,8,26,.6)}
+.term .k{display:flex;align-items:center;gap:8px;font:500 9.5px/1.3 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.term .v{margin-top:8px;font:500 clamp(17px,2vw,24px)/1.15 var(--f-mono);white-space:nowrap}
+.op{display:flex;align-items:center;justify-content:center;flex:0 0 auto;width:22px;font:500 22px/1 var(--f-mono);color:var(--ink-3)}
+@media (max-width:640px){.op{width:100%;height:12px;font-size:18px}}
+
+/* svg */
+.grid-line{stroke:var(--line);stroke-width:1;shape-rendering:crispEdges}
+.axis-line{stroke:var(--axis);stroke-width:1;shape-rendering:crispEdges}
+.tick{fill:var(--ink-3);font:400 10px var(--f-mono)}
+.lbl{fill:var(--ink);font:500 12px var(--f-mono)}
+.lbl-2{fill:var(--ink-2);font:400 10px var(--f-mono);letter-spacing:.03em}
+.row-name{fill:var(--ink);font:500 13px var(--f-body)}
+.row-note{fill:var(--ink-3);font:400 10px var(--f-mono)}
+.ln{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.ln-lime{stroke:var(--lime)}.ln-cyan{stroke:var(--cyan)}.ln-violet{stroke:var(--violet)}
+.area-lime{fill:var(--lime);fill-opacity:.1}
+.f-lime{fill:var(--lime)}.f-cyan{fill:var(--cyan)}.f-ember{fill:var(--ember)}.f-violet{fill:var(--violet)}
+.mk{stroke:var(--void);stroke-width:2}
+.cross{stroke:var(--ink-3);stroke-width:1}
+.era{fill:var(--lime);fill-opacity:.06}
+.evt{stroke:var(--axis);stroke-width:1}
+.conn{stroke:var(--ink-3);stroke-width:1;opacity:.45}
+.hit{fill:transparent}
+.lift{filter:brightness(1.4)}
+
+/* table */
+details.data{margin-top:24px;border:1px solid var(--line);background:rgba(8,8,26,.5)}
+details.data summary{cursor:pointer;padding:14px 18px;font:500 11px/1.4 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+details.data summary::marker{color:var(--lime)}
+.tbl{overflow-x:auto;border-top:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font:400 12px/1.4 var(--f-mono);font-variant-numeric:tabular-nums}
+th,td{padding:9px 14px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th:nth-child(-n+2),td:nth-child(-n+2){text-align:left}
+thead th{background:#0A0A1C;font:500 9.5px/1.3 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+tbody tr:hover{background:rgba(140,112,255,.06)}
+td.src a{color:var(--ink-2)}
+
+.foot{margin-top:clamp(56px,7vw,96px);padding-block:32px 56px;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:28px 48px;font-size:13px;color:var(--ink-2)}
+.foot h4{margin:0 0 10px;font:500 10.5px/1.4 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.foot ol,.foot ul{margin:0;padding-left:18px;display:grid;gap:8px}
+.disc{grid-column:1/-1;margin:0;font:400 11px/1.6 var(--f-mono);color:var(--ink-3)}
+
+/* tooltip */
+.tip{position:fixed;left:0;top:0;z-index:50;pointer-events:none;min-width:200px;max-width:300px;padding:10px 12px;background:rgba(7,7,20,.97);border:1px solid rgba(140,112,255,.4);box-shadow:0 12px 32px rgba(0,0,0,.55);font:400 11.5px/1.5 var(--f-mono);color:var(--ink-2);opacity:0;transition:opacity .12s}
+.tip.on{opacity:1}
+.tip .t{margin-bottom:6px;color:var(--ink);font-weight:500;letter-spacing:.03em}
+.tip .r{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.tip .l{display:inline-flex;align-items:center;gap:7px}
+.tip .l i{display:inline-block;width:12px;height:2px}
+.tip .l i.bx{width:8px;height:8px}
+.tip b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.toast,.tip{transition:none}}
+</style>
+<!--BODY-->
+<div class="obs" id="obs">
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <div class="wrap obs-inner">
+    <header class="topbar">
+      <span class="mark"><i aria-hidden="true"></i>ETH supply × BitMine (BMNR)</span>
+      <span>Weekly snapshot · data through <b data-bind="asof">Sep 27, 2026</b></span>
+    </header>
+
+    <section class="intro" aria-labelledby="h1">
+      <p class="eyebrow">Jun 30, 2025 → <span data-bind="asof">Sep 27, 2026</span> · <span data-bind="releases">66</span> holdings disclosures</p>
+      <h1 id="h1">BitMine now holds <span class="hl" data-bind="share">4.92%</span> of all the ETH in existence.</h1>
+      <p class="dek">Every dot below is 10,000 ETH. Together they are the entire supply, about <b data-bind="dots">12,208</b> dots. Press play to watch <span data-bind="releases">66</span> weekly disclosures pull <span data-bind="blocks">600</span> of them into BitMine's stack while staking mints new ETH and fees burn a little. The ring is marked in 5% steps, and BitMine's lime arc <span data-bind="ring">has filled 98% of one</span>.</p>
+    </section>
+
+    <div class="strip" role="group" aria-label="Readout for the date on the timeline">
+      <div class="cell date"><div class="k">Timeline</div><div class="v" id="h-date">SEP 27 2026</div><div class="u" id="h-week">Week 65 of 65</div></div>
+      <div class="cell bm"><div class="k"><i class="sw lime"></i>BitMine holds (ETH)</div><div class="v" id="h-bm">6,001,302</div></div>
+      <div class="cell"><div class="k">Share of all ETH</div><div class="v" id="h-share">4.916%</div></div>
+      <div class="cell"><div class="k">Latest weekly buy</div><div class="v" id="h-add">+17,362</div></div>
+      <div class="cell"><div class="k"><i class="sw violet"></i>ETH in existence</div><div class="v" id="h-sup">122,081,872</div></div>
+      <div class="cell"><div class="k"><i class="sw cyan"></i>Minted since Jun 30, 2025</div><div class="v" id="h-iss">+1,255,566</div></div>
+      <div class="cell"><div class="k"><i class="sw ember"></i>Burned since Jun 30, 2025</div><div class="v" id="h-brn">−42,049</div></div>
+    </div>
+
+    <div class="viz" id="viz" role="img" aria-label="Animated view of the ETH supply in dots of 10,000 ETH. The orb holds everyone else's ETH; the block stack beside it is BitMine's, just under a line marking 5% of all ETH.">
+      <div class="vlabel" id="lab-orb">All other ETH · 1 dot = 10,000 ETH</div>
+      <div class="vlabel" id="lab-vault">BitMine · 1 block = 10,000 ETH</div>
+      <div class="vlabel" id="lab-5">5% of all ETH</div>
+      <div class="toast" id="toast"></div>
+    </div>
+
+    <div class="transport">
+      <button class="btn" id="play" type="button">
+        <svg viewBox="0 0 12 12" aria-hidden="true"><path id="ico-play" d="M2 1l9 5-9 5z"/><path id="ico-pause" d="M2 1h3v10H2zM7 1h3v10H7z" hidden/></svg>
+        <span id="play-lbl">Replay from Jun 30, 2025</span>
+      </button>
+      <div class="seg" role="group" aria-label="Playback speed">
+        <button type="button" data-speed="7" aria-pressed="false" title="One week per second">1×</button><button type="button" data-speed="28" aria-pressed="true" title="Four weeks per second">4×</button>
+      </div>
+      <div class="scrub">
+        <div class="ticks" id="ticks" aria-hidden="true"></div>
+        <input id="scrub" type="range" min="1" max="455" step="1" value="455" aria-label="Timeline date">
+        <div class="ends"><span>Jun 30, 2025</span><span data-bind="asof">Sep 27, 2026</span></div>
+      </div>
+      <div class="legend">
+        <span><i class="sw violet"></i>Everyone else's ETH</span>
+        <span><i class="sw lime"></i>BitMine's ETH</span>
+        <span><i class="sw cyan"></i>Minted since Jun 30, 2025</span>
+        <span><i class="sw ember"></i>Burned (flashes out)</span>
+        <span class="dim">1 dot or block = 10,000 ETH</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap chapters" id="chapters">
+  <section class="chapter" id="stack" aria-labelledby="c1">
+    <p class="ch-eyebrow">The stack</p>
+    <h2 id="c1">BitMine bought <span data-bind="mult">4.9×</span> more ETH than the network added</h2>
+    <p class="lede">When BitMine announced its ETH treasury on June 30, 2025, there were <b data-bind="s0">120,868,355</b> ETH. Since then the supply has grown by a net <b data-bind="net">1,213,517</b>, while BitMine disclosed <b data-bind="bm">6,001,302</b>. In <span data-bind="beat">59</span> of the <span data-bind="intervals">65</span> intervals between its releases it added more ETH than the entire network did. It fell short only in the weeks ending <span data-bind="shortfalls">Jul 19, Jul 26, Aug 2, Aug 9, Aug 16 and Sep 27, 2026</span>; it slowed ETH buying in July and August 2026 while it bought back its own stock.</p>
+
+    <div class="panel">
+      <h3>Cumulative ETH since June 30, 2025</h3>
+      <div class="keys"><span class="key"><i class="ln" style="background:var(--lime)"></i>BitMine's disclosed holdings</span><span class="key"><i class="ln" style="background:var(--cyan)"></i>Net new ETH on the network</span></div>
+      <div class="chart" id="ch-stack"></div>
+      <p class="note">Holdings step up on each release's "as of" date. Net new ETH is total supply minus the <span data-bind="s0">120,868,355</span> ETH that existed on June 30, 2025.</p>
+    </div>
+
+    <div class="panel">
+      <h3>ETH added per release vs. the network's net new ETH</h3>
+      <div class="keys"><span class="key"><i class="bx" style="background:var(--lime)"></i>ETH BitMine added since its previous release</span><span class="key"><i class="ln" style="background:var(--cyan)"></i>Net new ETH on the whole network over the same days</span></div>
+      <div class="chart" id="ch-adds"></div>
+      <p class="note">Most releases are seven days apart; a few in July and August 2025 came three to six days apart. The biggest single addition was <span data-bind="peak">373,110</span> ETH in the week to <span data-bind="peakdate">Aug 17, 2025</span>.</p>
+    </div>
+  </section>
+
+  <section class="chapter" id="flows" aria-labelledby="c2">
+    <p class="ch-eyebrow">Created vs. burned</p>
+    <h2 id="c2">Staking mints about <span data-bind="ratio">30</span> ETH for every 1 that gets burned</h2>
+    <p class="lede">ETH supply changes with every block. Validators earn newly minted ETH as staking rewards, and every transaction destroys its base fee. Fees have stayed low, so the burn is small, and supply has grown by about <b data-bind="weekly">18,670</b> ETH a week since BitMine started buying.</p>
+
+    <div class="eq" role="group" aria-label="Supply since June 30, 2025">
+      <div class="term"><div class="k"><i class="sw violet"></i>ETH on Jun 30, 2025</div><div class="v" data-bind="s0">120,868,355</div></div>
+      <div class="op" aria-hidden="true">+</div><span class="sr">plus</span>
+      <div class="term"><div class="k"><i class="sw cyan"></i>Minted by staking</div><div class="v" data-bind="iss">1,255,566</div></div>
+      <div class="op" aria-hidden="true">−</div><span class="sr">minus</span>
+      <div class="term"><div class="k"><i class="sw ember"></i>Burned in fees</div><div class="v" data-bind="brn">42,049</div></div>
+      <div class="op" aria-hidden="true">=</div><span class="sr">equals</span>
+      <div class="term"><div class="k"><i class="sw violet"></i>ETH on <span data-bind="asof">Sep 27, 2026</span></div><div class="v" data-bind="se">122,081,872</div></div>
+    </div>
+
+    <div class="panel">
+      <h3>ETH minted and burned, week by week</h3>
+      <div class="keys"><span class="key"><i class="bx" style="background:var(--cyan)"></i>Minted (staking rewards)</span><span class="key"><i class="bx" style="background:var(--ember)"></i>Burned (base fees)</span></div>
+      <div class="chart" id="ch-flows"></div>
+      <p class="note">Weeks run Monday to Sunday. Burned ETH is derived as new issuance minus the change in total supply.</p>
+    </div>
+  </section>
+
+  <section class="chapter" id="supply" aria-labelledby="c3">
+    <p class="ch-eyebrow">All ETH, ever</p>
+    <h2 id="c3">Where all <span data-bind="totalWords">122 million</span> ETH came from</h2>
+    <p class="lede">About 72 million ETH existed at launch in 2015. Proof-of-work miners earned 50.4 million more before the Merge in September 2022, and proof-of-stake has paid <span data-bind="ledgerPos">4.35 million</span> in rewards since December 2020. EIP-1559 has burned <span data-bind="ledgerBurn">4.63 million</span> since August 2021. BitMine's <b data-bind="bmWords">6.00 million</b> is more than all the ETH ever burned and more than every staking reward ever paid.</p>
+
+    <div class="panel">
+      <h3>The ETH ledger, all time</h3>
+      <div class="keys"><span class="key"><i class="bx" style="background:var(--violet)"></i>Created or mined</span><span class="key"><i class="bx" style="background:var(--cyan)"></i>Staking rewards</span><span class="key"><i class="bx" style="background:var(--ember)"></i>Burned</span><span class="key"><i class="bx" style="background:var(--lime)"></i>BitMine's holdings</span></div>
+      <div class="chart" id="ch-ledger"></div>
+      <p class="note">Source: Etherscan supply breakdown, <span data-bind="ledgerAsof">Sep 28, 2026</span>.</p>
+    </div>
+
+    <div class="panel">
+      <h3>Total ETH supply since the burn began</h3>
+      <div class="keys"><span class="key"><i class="ln" style="background:var(--violet)"></i>ETH in existence</span><span class="key"><i class="bx" style="background:rgba(198,255,0,.25)"></i>Since BitMine started buying</span></div>
+      <div class="chart" id="ch-long"></div>
+      <p class="note">Burning outpaced issuance after the Merge, and supply fell to about 120.07 million by April 2024. The Dencun upgrade in March 2024 moved rollup data to cheaper blob space. Fees and the burn dropped, and supply has grown since. BitMine started buying at <span data-bind="s0M">120.87 million</span>.</p>
+    </div>
+  </section>
+
+  <section class="chapter" id="data" aria-label="Data table">
+    <p class="ch-eyebrow">The data</p>
+    <details class="data">
+      <summary>All <span data-bind="releases">66</span> BitMine ETH holdings releases</summary>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Release</th><th>As of</th><th>ETH held</th><th>Added</th><th>ETH price</th><th>Share of supply</th><th>BitMine stated</th><th>Staked</th><th>Source</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <footer class="foot">
+    <div>
+      <h4>Sources</h4>
+      <ol>
+        <li>BitMine Immersion Technologies weekly ETH holdings releases, Jul 14, 2025 to <span data-bind="released">Sep 28, 2026</span>, on PR Newswire, cross-checked against the same releases filed with the SEC as 8-K exhibits (<a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;CIK=0001829311&amp;type=8-K" target="_blank" rel="noopener">EDGAR</a>). Each release is linked in the table.</li>
+        <li><a href="https://docs.coinmetrics.io/" target="_blank" rel="noopener">Coin Metrics Community API</a>: daily ETH supply (SplyCur) and issuance (IssTotNtv).</li>
+        <li><a href="https://ultrasound.money" target="_blank" rel="noopener">ultrasound.money</a>: supply and burn totals, used as a cross-check.</li>
+        <li><a href="https://etherscan.io/stat/supply" target="_blank" rel="noopener">Etherscan</a>: all-time supply breakdown.</li>
+      </ol>
+    </div>
+    <div>
+      <h4>Method</h4>
+      <ul>
+        <li>One dot or block is 10,000 ETH; counts are rounded.</li>
+        <li>Holdings are BitMine's disclosed totals at each release's stated "as of" time.</li>
+        <li>Share of supply divides holdings by on-chain supply on the same date. BitMine's releases used 120.7 million as the denominator until September 2026, so their stated percentages run slightly higher.</li>
+        <li>Burned ETH is derived each day as new issuance minus the change in total supply.</li>
+        <li>Supply figures from different providers differ by a few thousand ETH, depending on how they count pending validator deposits.</li>
+      </ul>
+    </div>
+    <p class="disc">Independent visualization built from public data. Not an official BitMine publication. Not investment advice. Updated every Monday after BitMine's weekly release.</p>
+  </footer>
+</main>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+(() => {
+'use strict';
+const DATA = /*__DATA__*/null;
+const $ = id => document.getElementById(id);
+const K = DATA.supply.length - 1;
+const DAY = 864e5, TAU = Math.PI * 2;
+const BASE = Date.parse(DATA.base + 'T00:00:00Z');
+const dateOf = k => new Date(BASE + k * DAY);
+const isoD = s => new Date(Date.parse(s + 'T00:00:00Z'));
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const dLong = d => `${MON[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+const dHud = d => `${MON[d.getUTCMonth()].toUpperCase()} ${String(d.getUTCDate()).padStart(2, '0')} ${d.getUTCFullYear()}`;
+const dMY = d => `${MON[d.getUTCMonth()]} ’${String(d.getUTCFullYear()).slice(2)}`;
+const NF = new Intl.NumberFormat('en-US');
+const fmt = v => NF.format(Math.round(v));
+const sgn = v => (v < 0 ? '−' : '+') + NF.format(Math.abs(Math.round(v)));
+const pct = (v, d = 2) => (v * 100).toFixed(d) + '%';
+const mil = (v, d = 2) => (v / 1e6).toFixed(d) + 'M';
+const axisFmt = v => { const a = Math.abs(v), s = v < 0 ? '−' : ''; if (a >= 1e6) return s + (+(a / 1e6).toFixed(2)) + 'M'; if (a >= 1e3) return s + (+(a / 1e3).toFixed(1)) + 'K'; return s + a; };
+const reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+/* ---------- derived data ---------- */
+const PR = DATA.prs.map((p, i, a) => ({ k: p[0], pr: p[1], asof: p[2], eth: p[4], px: p[5], stated: p[6], staked: p[7], url: p[8], denom: p[9], prevK: i ? a[i - 1][0] : 0, add: p[4] - (i ? a[i - 1][4] : 0) }));
+PR.forEach(p => { p.supply = DATA.supply[p.k]; p.share = p.eth / p.supply; p.netNew = DATA.supply[p.k] - DATA.supply[p.prevK]; });
+const LAST = PR[PR.length - 1];
+const S0 = DATA.supply[0], SE = DATA.supply[K], ISS = DATA.iss[K], BRN = DATA.burn[K], NET = SE - S0;
+const holdAt = new Float64Array(K + 1), prAt = new Int32Array(K + 1);
+for (let k = 0, j = -1; k <= K; k++) { while (j + 1 < PR.length && PR[j + 1].k <= k) j++; prAt[k] = j; holdAt[k] = j >= 0 ? PR[j].eth : 0; }
+const PEAK = PR.reduce((a, b) => (b.add > a.add ? b : a));
+const SHORT = PR.slice(1).filter(p => p.add <= p.netNew);
+const LG = DATA.ledger;
+
+const shortText = (() => {
+  if (!SHORT.length) return 'none of them';
+  const ds = SHORT.map(p => dateOf(p.k)), yrs = new Set(ds.map(d => d.getUTCFullYear()));
+  if (yrs.size === 1) { const md = ds.map(d => `${MON[d.getUTCMonth()]} ${d.getUTCDate()}`), last = md.pop(); return (md.length ? md.join(', ') + ' and ' + last : last) + ', ' + [...yrs][0]; }
+  return ds.map(dLong).join('; ');
+})();
+const share = LAST.eth / SE;
+const BIND = {
+  asof: dLong(dateOf(K)), released: dLong(isoD(LAST.pr)), releases: String(PR.length),
+  share: pct(share, 2), bm: fmt(LAST.eth), net: fmt(NET), iss: fmt(ISS), brn: fmt(BRN), s0: fmt(S0), se: fmt(SE),
+  mult: (LAST.eth / NET).toFixed(1) + '×', ratio: String(Math.round(ISS / Math.max(1, BRN))),
+  dots: fmt(Math.round(SE / 1e4)), blocks: fmt(Math.round(LAST.eth / 1e4)),
+  beat: String(PR.length - 1 - SHORT.length), intervals: String(PR.length - 1), shortfalls: shortText,
+  peak: fmt(PEAK.add), peakdate: dLong(dateOf(PEAK.k)), weekly: fmt(NET / (K / 7)),
+  ring: share >= 0.05 ? 'has passed a full step' : `has filled ${Math.floor(share / 0.05 * 100)}% of one`,
+  totalWords: Math.floor(LG.total / 1e6) + ' million', ledgerPos: (LG.pos / 1e6).toFixed(2) + ' million',
+  ledgerBurn: (LG.burnt / 1e6).toFixed(2) + ' million', bmWords: (LAST.eth / 1e6).toFixed(2) + ' million',
+  ledgerAsof: dLong(isoD(LG.asOf)), s0M: (S0 / 1e6).toFixed(2) + ' million'
+};
+document.querySelectorAll('[data-bind]').forEach(el => { const v = BIND[el.dataset.bind]; if (v != null) el.textContent = v; });
+
+const EVENTS = (() => {
+  const ev = [[1, 'BitMine announces its ETH treasury strategy'], [PR[0].k, `First disclosure: ${fmt(PR[0].eth)} ETH`]];
+  for (let m = 1; m <= 40; m++) { const p = PR.find(q => q.eth >= m * 1e6); if (!p) break; ev.push([p.k, `${fmt(m * 1e6)} ETH stacked`]); }
+  for (let q = 1; q <= 20; q++) { const p = PR.find(r => r.share >= q / 100); if (!p) break; ev.push([p.k, `Passes ${q}% of all ETH`]); }
+  ev.push([PEAK.k, `Biggest week: +${fmt(PEAK.add)} ETH`]);
+  const mv = Math.round((Date.parse('2026-03-25T00:00:00Z') - BASE) / DAY);
+  if (mv > 0 && mv <= K) ev.push([mv, 'MAVAN, BitMine’s staking network, goes live']);
+  const m = new Map();
+  ev.forEach(([k, t]) => m.set(k, m.has(k) ? m.get(k) + ' · ' + t : t));
+  return m;
+})();
+
+/* ---------- time-lapse scene ---------- */
+const Scene = (() => {
+  const sec = $('obs'), cv = $('sky'), ctx = cv.getContext('2d'), viz = $('viz');
+  const orbCv = document.createElement('canvas'), octx = orbCv.getContext('2d');
+  const GA = Math.PI * (3 - Math.sqrt(5));
+  const N0 = Math.round(S0 / 1e4);
+  const ISS_MAX = Math.round(ISS / 1e4), BRN_MAX = Math.max(0, Math.round(BRN / 1e4));
+  const NMAX = N0 + Math.ceil(ISS_MAX * 1.3) + 60;
+  const STACK_MAX = Math.round(LAST.eth / 1e4), T5 = Math.ceil(0.05 * SE / 1e4);
+  const CAPN = Math.max(620, Math.ceil((Math.max(STACK_MAX, T5) + 12) / 20) * 20);
+  const ux = new Float32Array(NMAX), uy = new Float32Array(NMAX), ang = new Float64Array(NMAX), bucket = new Uint8Array(NMAX);
+  let seed = 20250630; const rnd = () => (seed = (seed * 48271) % 2147483647) / 2147483647;
+  for (let i = 0; i < NMAX; i++) { const r = Math.sqrt((i + 0.5) / NMAX), a = (i * GA) % TAU; ux[i] = r * Math.cos(a); uy[i] = r * Math.sin(a); ang[i] = a; bucket[i] = (rnd() * 4) | 0; }
+  const state = new Uint8Array(NMAX); // 0 empty · 1 ETH · 2 minted · 3 queued for BitMine
+  const lit = new Uint8Array(CAPN), litAt = new Float64Array(CAPN);
+  let wedge, issueO, burnO, L = null, W = 0, H = 0, dpr = 1, stars = [];
+  let stackN = 0, issN = 0, burnN = 0, flights = [], fx = [], orbDirty = true;
+  let t = K, kDone = K, playing = false, speed = 28, last = 0, raf = 0, inView = true, touched = false;
+  let disp = holdAt[K], hudK = -1, toastTimer = 0;
+  const ambient = !reduced;
+
+  const rel = (i, dir) => { let a = ((ang[i] - dir) % TAU + TAU) % TAU; return a > Math.PI ? a - TAU : a; };
+  function buildOrders(dir) {
+    const idx = Array.from({ length: N0 }, (_, i) => i), ra = new Float64Array(N0);
+    for (let i = 0; i < N0; i++) ra[i] = Math.abs(rel(i, dir));
+    idx.sort((a, b) => ra[a] - ra[b]);
+    wedge = Int32Array.from(idx.slice(0, CAPN + 40));
+    const iss = []; for (let i = N0; i < NMAX; i++) if (Math.abs(rel(i, dir)) > 0.24) iss.push(i);
+    issueO = Int32Array.from(iss);
+    let s = 424242; const r2 = () => (s = (s * 48271) % 2147483647) / 2147483647;
+    const b = [], seen = new Set(); let guard = 0;
+    while (b.length < BRN_MAX + 12 && guard++ < 200000) { const i = (r2() * N0) | 0; if (!seen.has(i) && Math.abs(rel(i, dir)) > 0.6 && ux[i] * ux[i] + uy[i] * uy[i] > 0.1) { seen.add(i); b.push(i); } }
+    burnO = Int32Array.from(b);
+  }
+
+  const viewK = () => Math.max(1, Math.min(K, Math.floor(t)));
+  function cellXY(j) {
+    if (L.wide) { const c = j % L.cols, r = (j / L.cols) | 0; return [L.vx + c * L.p, L.vy + L.vh - (r + 1) * L.p]; }
+    const c = (j / L.rows) | 0, r = j % L.rows; return [L.vx + c * L.p, L.vy + L.vh - (r + 1) * L.p];
+  }
+  function targetPos(k) { const tb = 0.05 * DATA.supply[k] / 1e4; return L.wide ? L.vy + L.vh - (tb / L.cols) * L.p : L.vx + (tb / L.rows) * L.p; }
+  function place(id, x, y, cls) { const e = $(id); e.style.left = x + 'px'; e.style.top = y + 'px'; e.classList.toggle('rt', cls === 'rt'); }
+  function placeFive(k) { if (L.wide) place('lab-5', L.vx - L.x - 16, targetPos(k) - L.y, 'rt'); else place('lab-5', targetPos(k) - L.x + 4, L.vy - L.y - 16, 'rt'); }
+  function placeLabels() {
+    if (L.wide) { place('lab-orb', L.cx - L.x, L.cy - L.y + L.R + 32); place('lab-vault', L.vx - L.x + (L.vw - (L.p - L.blk)) / 2, L.vy - L.y - 24); }
+    else { place('lab-orb', L.cx - L.x, 52); place('lab-vault', L.vx - L.x + L.vw / 2, L.vy - L.y + L.vh + 20); }
+    placeFive(viewK());
+  }
+
+  function layout() {
+    const wide = viz.getBoundingClientRect().width >= 720;
+    viz.classList.toggle('narrow', !wide);
+    const rs = sec.getBoundingClientRect(), vr = viz.getBoundingClientRect();
+    W = rs.width; H = rs.height; dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    const o = { wide, x: vr.left - rs.left, y: vr.top - rs.top, w: vr.width, h: vr.height };
+    if (wide) {
+      o.dir = 0; o.cols = 20; o.rows = Math.ceil(CAPN / 20);
+      o.R = Math.min(o.h * 0.4, o.w * 0.25);
+      o.cx = o.x + o.w * 0.35; o.cy = o.y + o.h * 0.5;
+      o.p = Math.max(6, Math.floor(Math.min(o.h * 0.8 / o.rows, o.w * 0.2 / o.cols)));
+      o.vw = o.cols * o.p; o.vh = o.rows * o.p;
+      o.vx = Math.round(o.x + o.w * 0.78 - o.vw / 2); o.vy = Math.round(o.cy - o.vh / 2);
+    } else {
+      o.dir = Math.PI / 2; o.rows = 12; o.cols = Math.ceil(CAPN / 12);
+      o.R = Math.min(o.w * 0.4, o.h * 0.3);
+      o.cx = o.x + o.w / 2; o.cy = o.y + 72 + o.R;
+      o.p = Math.max(3, Math.floor(o.w * 0.94 / o.cols));
+      o.vw = o.cols * o.p; o.vh = o.rows * o.p;
+      o.vx = Math.round(o.x + (o.w - o.vw) / 2); o.vy = Math.round(o.cy + o.R + 64);
+    }
+    o.dot = Math.max(1.1, Math.min(2.5, o.R / 108));
+    o.blk = o.p >= 8 ? o.p - 2 : o.p - 1;
+    const turn = !L || L.dir !== o.dir;
+    L = o;
+    if (turn) buildOrders(o.dir);
+    makeStars();
+    rebuild(kDone);
+    placeLabels();
+    kick();
+  }
+
+  function makeStars() {
+    stars = []; const n = Math.min(340, Math.round(W * H / 3800)); let s = 77;
+    const r = () => (s = (s * 48271) % 2147483647) / 2147483647;
+    for (let i = 0; i < n; i++) stars.push([r() * W, r() * H * 0.9, r(), r() * TAU, 0.4 + r() * 1.6]);
+  }
+
+  function rebuild(k) {
+    flights = []; fx = [];
+    state.fill(0); state.fill(1, 0, N0);
+    issN = Math.min(issueO.length, Math.round(DATA.iss[k] / 1e4)); for (let j = 0; j < issN; j++) state[issueO[j]] = 2;
+    burnN = Math.min(burnO.length, Math.max(0, Math.round(DATA.burn[k] / 1e4))); for (let j = 0; j < burnN; j++) state[burnO[j]] = 0;
+    stackN = Math.min(wedge.length, CAPN, Math.round(holdAt[k] / 1e4)); for (let j = 0; j < stackN; j++) state[wedge[j]] = 0;
+    lit.fill(0); lit.fill(1, 0, stackN); litAt.fill(-1e9);
+    kDone = k; orbDirty = true; disp = holdAt[k]; hudK = -1;
+  }
+
+  function stepDay(k, now) {
+    const tI = Math.min(issueO.length, Math.round(DATA.iss[k] / 1e4));
+    while (issN < tI) { const s = issueO[issN++]; state[s] = 2; if (!reduced) fx.push({ m: 0, s, t0: now }); orbDirty = true; }
+    const tB = Math.min(burnO.length, Math.max(0, Math.round(DATA.burn[k] / 1e4)));
+    while (burnN < tB) { const s = burnO[burnN++]; state[s] = 0; if (!reduced) fx.push({ m: 1, s, t0: now, a: Math.random() * TAU }); orbDirty = true; }
+    const tS = Math.min(wedge.length, CAPN, Math.round(holdAt[k] / 1e4)), n = tS - stackN;
+    if (n > 0) {
+      const gap = Math.min(45, 900 / n);
+      for (let j = 0; j < n; j++) {
+        const s = wedge[stackN];
+        if (reduced) { state[s] = 0; lit[stackN] = 1; }
+        else { state[s] = 3; flights.push({ s, c: stackN, t0: now + j * gap, d: 950 + Math.random() * 300, arc: Math.random(), go: false }); }
+        stackN++;
+      }
+      orbDirty = true;
+    }
+    const ev = EVENTS.get(k); if (ev) toast(k, ev);
+  }
+
+  function frame(now) {
+    raf = 0;
+    const dt = last ? Math.min(0.05, (now - last) / 1000) : 0; last = now;
+    if (playing) {
+      t = Math.min(K, t + dt * speed);
+      const kn = Math.floor(t);
+      while (kDone < kn) stepDay(++kDone, now);
+      if (t >= K) { playing = false; setBtn(); }
+    }
+    draw(now);
+    hud(dt);
+    const busy = playing || flights.length || fx.length || Math.abs(disp - holdAt[viewK()]) > 0.5;
+    if (busy || (ambient && inView && !document.hidden)) raf = requestAnimationFrame(frame); else last = 0;
+  }
+  function kick() { if (!raf) raf = requestAnimationFrame(frame); }
+
+  function draw(now) {
+    const c = ctx;
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.clearRect(0, 0, W, H);
+    drawStars(c, now);
+    drawTerrain(c, now);
+    drawRing(c);
+    if (orbDirty) { renderOrb(); orbDirty = false; }
+    const pad = 16;
+    c.drawImage(orbCv, L.cx - L.R - pad, L.cy - L.R - pad, (L.R + pad) * 2, (L.R + pad) * 2);
+    if (ambient) sparkle(c);
+    drawFx(c, now);
+    drawVault(c, now);
+    drawFlights(c, now);
+  }
+
+  function drawStars(c, now) {
+    const tt = now / 1000; c.fillStyle = '#DCD7FF';
+    for (const s of stars) {
+      const tw = ambient ? 0.55 + 0.45 * Math.sin(tt * s[4] + s[3]) : 0.8;
+      c.globalAlpha = (0.15 + 0.7 * s[2]) * tw;
+      const z = 0.6 + s[2] * 1.3; c.fillRect(s[0], s[1], z, z);
+    }
+    c.globalAlpha = 1;
+  }
+
+  const hash = n => { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
+  const vnoise = x => { const i = Math.floor(x), f = x - i, u = f * f * (3 - 2 * f); return hash(i) * (1 - u) + hash(i + 1) * u; };
+  const ridge = x => vnoise(x) * 0.6 + vnoise(x * 2.13 + 3.1) * 0.28 + vnoise(x * 4.71 + 7.7) * 0.12;
+  function drawTerrain(c, now) {
+    const top = L.y + L.h * 0.74, span = H - top; if (span < 40) return;
+    const off = ambient ? now / 1000 * 10 : 0, layers = 11, step = 12;
+    c.lineWidth = 1;
+    for (let j = 0; j < layers; j++) {
+      const f = j / (layers - 1), yb = top + Math.pow(f, 1.6) * span * 0.9 + 6, amp = 16 + f * 64, sc = 0.0065 - f * 0.003;
+      c.beginPath();
+      for (let x = -step; x <= W + step; x += step) {
+        const yy = yb - Math.pow(ridge((x + off * (0.25 + f * 1.2)) * sc + j * 17.3), 1.7) * amp;
+        if (x === -step) c.moveTo(x, yy); else c.lineTo(x, yy);
+      }
+      c.lineTo(W + step, H + 4); c.lineTo(-step, H + 4); c.closePath();
+      c.fillStyle = 'rgba(5,5,11,0.94)'; c.fill();
+      c.strokeStyle = `rgba(${Math.round(150 - 70 * f)},${Math.round(92 + 40 * f)},255,${(0.1 + 0.42 * f).toFixed(3)})`; c.stroke();
+    }
+  }
+
+  function drawRing(c) {
+    const R = L.R + 10, cx = L.cx, cy = L.cy, dir = L.dir;
+    c.save();
+    c.lineWidth = 1; c.strokeStyle = 'rgba(140,112,255,0.22)';
+    c.beginPath(); c.arc(cx, cy, R + 10, 0, TAU); c.stroke();
+    c.beginPath();
+    for (let i = 0; i < 20; i++) { const a = dir + Math.PI * 0.05 + i * Math.PI / 10; c.moveTo(cx + Math.cos(a) * (R + 6), cy + Math.sin(a) * (R + 6)); c.lineTo(cx + Math.cos(a) * (R + 14), cy + Math.sin(a) * (R + 14)); }
+    c.strokeStyle = 'rgba(168,150,255,0.45)'; c.stroke();
+    const g = c.createLinearGradient(cx - R, cy - R, cx + R, cy + R);
+    g.addColorStop(0, 'rgba(216,75,255,0.95)'); g.addColorStop(0.5, 'rgba(140,112,255,0.6)'); g.addColorStop(1, 'rgba(84,120,255,0.9)');
+    c.strokeStyle = g; c.lineWidth = 1.6; c.shadowColor = 'rgba(170,90,255,0.9)'; c.shadowBlur = 18;
+    c.beginPath(); c.arc(cx, cy, R, 0, TAU); c.stroke();
+    const half = disp / DATA.supply[viewK()] * Math.PI;
+    if (half > 0.0005) { c.strokeStyle = '#C6FF00'; c.lineWidth = 3.2; c.shadowColor = 'rgba(198,255,0,0.95)'; c.shadowBlur = 16; c.beginPath(); c.arc(cx, cy, R, dir - half, dir + half); c.stroke(); }
+    c.shadowBlur = 0; c.strokeStyle = 'rgba(198,255,0,0.6)'; c.lineWidth = 1.2; c.beginPath();
+    for (const s of [-1, 1]) { const a = dir + s * Math.PI * 0.05; c.moveTo(cx + Math.cos(a) * (R - 6), cy + Math.sin(a) * (R - 6)); c.lineTo(cx + Math.cos(a) * (R + 18), cy + Math.sin(a) * (R + 18)); }
+    c.stroke();
+    c.restore();
+  }
+
+  function renderOrb() {
+    const pad = 16, R = L.R, sz = (R + pad) * 2, px = Math.ceil(sz * dpr);
+    if (orbCv.width !== px) { orbCv.width = px; orbCv.height = px; }
+    const c = octx; c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, sz, sz);
+    const cx = R + pad, cy = R + pad, s = L.dot, so = s / 2, hs = s * 3.4, ho = hs / 2, ms = s * 1.4, mo = ms / 2, mh = ms * 3, mho = mh / 2;
+    const g = c.createRadialGradient(cx, cy, 0, cx, cy, R * 1.04);
+    g.addColorStop(0, 'rgba(140,112,255,0.16)'); g.addColorStop(0.7, 'rgba(140,112,255,0.05)'); g.addColorStop(1, 'rgba(140,112,255,0)');
+    c.fillStyle = g; c.beginPath(); c.arc(cx, cy, R * 1.04, 0, TAU); c.fill();
+    const halo = new Path2D(), B = [new Path2D(), new Path2D(), new Path2D(), new Path2D()], mint = new Path2D(), mintH = new Path2D(), q = new Path2D();
+    for (let i = 0; i < NMAX; i++) {
+      const st = state[i]; if (!st) continue;
+      const x = cx + ux[i] * R, y = cy + uy[i] * R;
+      if (st === 1) { halo.rect(x - ho, y - ho, hs, hs); B[bucket[i]].rect(x - so, y - so, s, s); }
+      else if (st === 2) { mintH.rect(x - mho, y - mho, mh, mh); mint.rect(x - mo, y - mo, ms, ms); }
+      else q.rect(x - mo, y - mo, ms, ms);
+    }
+    c.globalCompositeOperation = 'lighter';
+    c.fillStyle = 'rgba(140,112,255,0.045)'; c.fill(halo);
+    c.fillStyle = 'rgba(28,159,214,0.16)'; c.fill(mintH);
+    c.globalCompositeOperation = 'source-over';
+    const cols = ['rgba(140,112,255,0.40)', 'rgba(140,112,255,0.60)', 'rgba(164,144,255,0.80)', 'rgba(200,188,255,0.95)'];
+    for (let b = 0; b < 4; b++) { c.fillStyle = cols[b]; c.fill(B[b]); }
+    c.fillStyle = '#1C9FD6'; c.fill(mint);
+    c.fillStyle = '#C6FF00'; c.fill(q);
+  }
+
+  function sparkle(c) {
+    const R = L.R, s = L.dot * 1.5; c.fillStyle = '#EDE8FF';
+    for (let n = 0; n < 26; n++) { const i = (Math.random() * N0) | 0; if (state[i] !== 1) continue; c.globalAlpha = 0.25 + Math.random() * 0.6; c.fillRect(L.cx + ux[i] * R - s / 2, L.cy + uy[i] * R - s / 2, s, s); }
+    c.globalAlpha = 1;
+  }
+
+  function drawFx(c, now) {
+    if (!fx.length) return;
+    const R = L.R, keep = [];
+    c.save(); c.globalCompositeOperation = 'lighter';
+    for (const e of fx) {
+      const x = L.cx + ux[e.s] * R, y = L.cy + uy[e.s] * R, age = now - e.t0;
+      if (e.m === 0) {
+        const u = age / 900; if (u >= 1) continue; keep.push(e);
+        c.globalAlpha = 1 - u; c.strokeStyle = '#1C9FD6'; c.lineWidth = 1.5; c.beginPath(); c.arc(x, y, 2 + u * 16, 0, TAU); c.stroke();
+      } else {
+        const u = age / 1600; if (u >= 1) continue; keep.push(e);
+        c.globalAlpha = 1 - u; c.fillStyle = '#E8532F'; c.strokeStyle = '#E8532F';
+        const cs = L.dot * 2.6 * (1 + u); c.fillRect(x - cs / 2, y - cs / 2, cs, cs);
+        c.lineWidth = 1.5; c.beginPath(); c.arc(x, y, 3 + u * 30, 0, TAU); c.stroke();
+        for (let n = 0; n < 8; n++) { const an = e.a + n * TAU / 8, d = 5 + u * 34; c.fillRect(x + Math.cos(an) * d - 1, y + Math.sin(an) * d - 1, 2, 2); }
+      }
+    }
+    c.restore(); fx = keep;
+  }
+
+  function drawVault(c, now) {
+    const b = L.blk, g = L.p - b, x0 = L.vx - 7, y0 = L.vy - 7, x1 = L.vx + L.vw - g + 7, y1 = L.vy + L.vh - g + 7, bl = 10;
+    c.strokeStyle = 'rgba(198,255,0,0.45)'; c.lineWidth = 1; c.beginPath();
+    c.moveTo(x0, y0 + bl); c.lineTo(x0, y0); c.lineTo(x0 + bl, y0);
+    c.moveTo(x1 - bl, y0); c.lineTo(x1, y0); c.lineTo(x1, y0 + bl);
+    c.moveTo(x1, y1 - bl); c.lineTo(x1, y1); c.lineTo(x1 - bl, y1);
+    c.moveTo(x0 + bl, y1); c.lineTo(x0, y1); c.lineTo(x0, y1 - bl);
+    c.stroke();
+    const empty = new Path2D(), full = new Path2D();
+    for (let j = 0; j < CAPN; j++) { const p = cellXY(j); (lit[j] ? full : empty).rect(p[0], p[1], b, b); }
+    c.fillStyle = 'rgba(198,255,0,0.06)'; c.fill(empty);
+    c.save(); c.fillStyle = '#C6FF00'; c.shadowColor = 'rgba(198,255,0,0.6)'; c.shadowBlur = 8; c.fill(full); c.restore();
+    c.fillStyle = '#FFFFFF';
+    for (let j = 0; j < CAPN; j++) { const age = now - litAt[j]; if (age >= 0 && age < 500) { const p = cellXY(j); c.globalAlpha = 1 - age / 500; c.fillRect(p[0] - 1, p[1] - 1, b + 2, b + 2); } }
+    c.globalAlpha = 1;
+    const tp = targetPos(viewK());
+    c.strokeStyle = 'rgba(243,242,251,0.85)'; c.lineWidth = 1; c.beginPath();
+    if (L.wide) { c.moveTo(L.vx - 12, tp); c.lineTo(L.vx + L.vw - g + 12, tp); } else { c.moveTo(tp, L.vy - 10); c.lineTo(tp, L.vy + L.vh - g + 10); }
+    c.stroke();
+  }
+
+  function drawFlights(c, now) {
+    if (!flights.length) return;
+    const R = L.R, s = Math.max(2, L.dot * 1.7), keep = [];
+    c.save(); c.globalCompositeOperation = 'lighter';
+    for (const f of flights) {
+      if (now < f.t0) { keep.push(f); continue; }
+      if (!f.go) { f.go = true; state[f.s] = 0; orbDirty = true; }
+      const u = Math.min(1, (now - f.t0) / f.d), e = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+      const x0 = L.cx + ux[f.s] * R, y0 = L.cy + uy[f.s] * R, cp = cellXY(f.c), x1 = cp[0] + L.blk / 2, y1 = cp[1] + L.blk / 2;
+      let qx, qy;
+      if (L.wide) { qx = (x0 + x1) / 2; qy = Math.min(y0, y1) - 50 - 110 * f.arc; }
+      else { qx = (x0 + x1) / 2 + (f.arc - 0.5) * 160; qy = (y0 + y1) / 2 - 20; }
+      for (let m = 7; m >= 0; m--) {
+        const ee = Math.max(0, e - m * 0.028), it = 1 - ee;
+        const px = it * it * x0 + 2 * it * ee * qx + ee * ee * x1, py = it * it * y0 + 2 * it * ee * qy + ee * ee * y1;
+        if (m) { c.globalAlpha = 0.55 * (1 - m / 8); c.fillStyle = '#C6FF00'; const z = s * (1 - m / 10); c.fillRect(px - z / 2, py - z / 2, z, z); }
+        else { c.globalAlpha = 1; c.fillStyle = '#F2FFC2'; const z = s * 1.3; c.fillRect(px - z / 2, py - z / 2, z, z); }
+      }
+      if (u >= 1) { lit[f.c] = 1; litAt[f.c] = now; } else keep.push(f);
+    }
+    c.restore(); flights = keep;
+  }
+
+  const HUD = { date: $('h-date'), wk: $('h-week'), bm: $('h-bm'), share: $('h-share'), add: $('h-add'), sup: $('h-sup'), iss: $('h-iss'), brn: $('h-brn') };
+  const scrub = $('scrub'), WEEKS = Math.ceil(K / 7);
+  scrub.max = K;
+  function hud(dt) {
+    const k = viewK(), target = holdAt[k];
+    if ((playing || flights.length) && dt > 0) { disp += (target - disp) * Math.min(1, dt * 5); if (Math.abs(target - disp) < 1) disp = target; } else disp = target;
+    HUD.bm.textContent = fmt(disp);
+    HUD.share.textContent = pct(disp / DATA.supply[k], 3);
+    if (k === hudK) return;
+    hudK = k;
+    HUD.date.textContent = dHud(dateOf(k));
+    HUD.wk.textContent = `Week ${Math.min(WEEKS, Math.max(1, Math.ceil(k / 7)))} of ${WEEKS}`;
+    HUD.sup.textContent = fmt(DATA.supply[k]);
+    HUD.iss.textContent = sgn(DATA.iss[k]);
+    HUD.brn.textContent = sgn(-DATA.burn[k]);
+    HUD.add.textContent = prAt[k] >= 0 ? sgn(PR[prAt[k]].add) : '—';
+    scrub.value = k;
+    scrub.style.setProperty('--p', ((k - 1) / (K - 1) * 100).toFixed(2) + '%');
+    placeFive(k);
+  }
+
+  const toastEl = $('toast');
+  function toast(k, text) {
+    const d = document.createElement('span'); d.className = 'td'; d.textContent = dHud(dateOf(k));
+    const x = document.createElement('span'); x.textContent = text;
+    toastEl.replaceChildren(d, x); toastEl.classList.add('on');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove('on'), speed > 10 ? 1600 : 2600);
+  }
+
+  const btn = $('play'), lbl = $('play-lbl'), icoPlay = $('ico-play'), icoPause = $('ico-pause');
+  function setBtn() {
+    icoPlay.toggleAttribute('hidden', playing); icoPause.toggleAttribute('hidden', !playing);
+    lbl.textContent = playing ? 'Pause' : (t >= K ? 'Replay from Jun 30, 2025' : 'Resume');
+  }
+  function start() { if (t >= K) { rebuild(0); t = 0; } playing = true; setBtn(); kick(); }
+  btn.addEventListener('click', () => { touched = true; if (playing) { playing = false; setBtn(); } else start(); });
+  scrub.addEventListener('input', () => { touched = true; playing = false; const k = +scrub.value; t = k; rebuild(k); setBtn(); kick(); });
+  document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+    speed = +b.dataset.speed;
+    document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  }));
+
+  const ticks = $('ticks');
+  for (let m = 1; m <= 40; m++) {
+    const p = PR.find(q => q.eth >= m * 1e6); if (!p) break;
+    const e = document.createElement('span'); e.className = 'tk'; e.textContent = m + 'M';
+    e.style.left = `calc(7px + (100% - 14px) * ${((p.k - 1) / (K - 1)).toFixed(4)})`;
+    ticks.appendChild(e);
+  }
+
+  new IntersectionObserver(es => { inView = es[0].isIntersecting; if (inView) kick(); }, { threshold: 0.02 }).observe(sec);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); });
+  let rt = 0; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(layout, 100); }).observe(sec);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => layout());
+  layout(); setBtn();
+  if (!reduced) setTimeout(() => { if (!touched && !document.hidden && inView) start(); }, 1800);
+})();
+
+/* ---------- charts ---------- */
+const tip = (() => {
+  const el = $('tip');
+  return {
+    show(cx, cy, title, rows) {
+      const t = document.createElement('div'); t.className = 't'; t.textContent = title;
+      const kids = [t];
+      for (const r of rows) {
+        const d = document.createElement('div'); d.className = 'r';
+        const l = document.createElement('span'); l.className = 'l';
+        if (r.c) { const i = document.createElement('i'); i.style.background = r.c; if (r.box) i.className = 'bx'; l.appendChild(i); }
+        l.appendChild(document.createTextNode(r.l));
+        const b = document.createElement('b'); b.textContent = r.v;
+        d.append(l, b); kids.push(d);
+      }
+      el.replaceChildren(...kids); el.classList.add('on');
+      const bw = el.offsetWidth, bh = el.offsetHeight;
+      let x = cx + 16, y = cy + 16;
+      if (x + bw > innerWidth - 8) x = cx - bw - 16;
+      if (y + bh > innerHeight - 8) y = cy - bh - 16;
+      el.style.left = Math.max(8, x) + 'px'; el.style.top = Math.max(8, y) + 'px';
+    },
+    hide() { el.classList.remove('on'); }
+  };
+})();
+
+function mk(id, w, h, label) {
+  const el = $(id); el.replaceChildren();
+  return d3.select(el).append('svg').attr('width', w).attr('height', h).attr('viewBox', `0 0 ${w} ${h}`).attr('role', 'img').attr('aria-label', label);
+}
+function yGrid(svg, y, x0, x1, ticks, f = axisFmt) {
+  const g = svg.append('g');
+  for (const v of ticks) {
+    const yy = Math.round(y(v)) + 0.5;
+    g.append('line').attr('class', v === 0 ? 'axis-line' : 'grid-line').attr('x1', x0).attr('x2', x1).attr('y1', yy).attr('y2', yy);
+    g.append('text').attr('class', 'tick').attr('x', x0 - 8).attr('y', yy).attr('dy', '0.32em').attr('text-anchor', 'end').text(f(v));
+  }
+}
+function xTimeTicks(svg, x, ty, interval, x0, x1, f = dMY) {
+  const g = svg.append('g');
+  for (const d of x.ticks(interval)) {
+    const px = x(d); if (px < x0 - 1 || px > x1 + 1) continue;
+    g.append('text').attr('class', 'tick').attr('x', px).attr('y', ty).attr('text-anchor', px - x0 < 24 ? 'start' : (x1 - px < 24 ? 'end' : 'middle')).text(f(d));
+  }
+}
+function bandMonths(svg, x, items, dateFn, ty, every) {
+  let lastM = -1;
+  items.forEach((it, i) => {
+    const d = dateFn(it), mi = d.getUTCFullYear() * 12 + d.getUTCMonth();
+    if (mi === lastM) return; lastM = mi;
+    if (d.getUTCMonth() % every) return;
+    svg.append('text').attr('class', 'tick').attr('x', x(i) + x.bandwidth() / 2).attr('y', ty).attr('text-anchor', 'middle').text(dMY(d));
+  });
+}
+function barPath(x, y0, w, y1, r) {
+  const hgt = Math.abs(y1 - y0); r = Math.max(0, Math.min(r, w / 2, hgt));
+  if (y1 <= y0) return `M${x},${y0}V${y1 + r}Q${x},${y1} ${x + r},${y1}H${x + w - r}Q${x + w},${y1} ${x + w},${y1 + r}V${y0}Z`;
+  return `M${x},${y0}V${y1 - r}Q${x},${y1} ${x + r},${y1}H${x + w - r}Q${x + w},${y1} ${x + w},${y1 - r}V${y0}Z`;
+}
+function endLabel(svg, x, y, name, val, anchor = 'start') {
+  const t = svg.append('text').attr('x', x).attr('y', y).attr('text-anchor', anchor);
+  t.append('tspan').attr('class', 'lbl-2').attr('x', x).attr('dy', '-0.35em').text(name);
+  t.append('tspan').attr('class', 'lbl').attr('x', x).attr('dy', '1.3em').text(val);
+}
+function keyNav(node, count, getCur, show) {
+  node.setAttribute('tabindex', '0');
+  node.addEventListener('keydown', ev => {
+    let i = getCur(); if (i < 0) i = count - 1;
+    if (ev.key === 'ArrowLeft') i = Math.max(0, i - 1);
+    else if (ev.key === 'ArrowRight') i = Math.min(count - 1, i + 1);
+    else if (ev.key === 'Home') i = 0;
+    else if (ev.key === 'End') i = count - 1;
+    else return;
+    ev.preventDefault(); show(i, true);
+  });
+  node.addEventListener('focus', () => { if (getCur() < 0) show(count - 1, true); });
+}
+function crosshair(svg, box, keys, xOfKey, info) {
+  const node = svg.node(), g = svg.append('g').style('display', 'none').attr('pointer-events', 'none');
+  const ln = g.append('line').attr('class', 'cross').attr('y1', box.y0).attr('y2', box.y1), dg = g.append('g');
+  let cur = -1;
+  const hide = () => { g.style('display', 'none'); tip.hide(); cur = -1; };
+  function show(i, kb, ev) {
+    cur = i; const key = keys[i], px = xOfKey(key), inf = info(key);
+    g.style('display', null); ln.attr('x1', px).attr('x2', px);
+    dg.selectAll('circle').data(inf.marks).join('circle').attr('class', 'mk').attr('cx', px).attr('cy', d => d.y).attr('r', 4.5).style('fill', d => d.c);
+    if (kb) { const r = node.getBoundingClientRect(); tip.show(r.left + px, r.top + box.y0 + 8, inf.title, inf.rows); }
+    else tip.show(ev.clientX, ev.clientY, inf.title, inf.rows);
+  }
+  const nearest = px => { let lo = 0, hi = keys.length - 1; while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (xOfKey(keys[mid]) < px) lo = mid; else hi = mid; } return px - xOfKey(keys[lo]) < xOfKey(keys[hi]) - px ? lo : hi; };
+  svg.append('rect').attr('class', 'hit').attr('x', box.x0).attr('y', box.y0).attr('width', box.x1 - box.x0).attr('height', box.y1 - box.y0)
+    .on('pointermove', ev => show(nearest(d3.pointer(ev, node)[0]), false, ev)).on('pointerleave', hide);
+  keyNav(node, keys.length, () => cur, show);
+  node.addEventListener('blur', hide);
+}
+function barHover(svg, items, xOf, step, box, info, marks) {
+  const node = svg.node(); let cur = -1;
+  const hide = () => { marks.classed('lift', false); tip.hide(); cur = -1; };
+  function show(i, kb, ev) {
+    cur = i; const it = items[i], inf = info(it);
+    marks.classed('lift', d => d === it);
+    if (kb) { const r = node.getBoundingClientRect(); tip.show(r.left + xOf(i) + step / 2, r.top + box.y0 + 8, inf.title, inf.rows); }
+    else tip.show(ev.clientX, ev.clientY, inf.title, inf.rows);
+  }
+  svg.append('g').selectAll('rect').data(items).join('rect').attr('class', 'hit')
+    .attr('x', (d, i) => xOf(i)).attr('width', step).attr('y', box.y0).attr('height', box.y1 - box.y0)
+    .on('pointermove', (ev, d) => show(items.indexOf(d), false, ev)).on('pointerleave', hide);
+  keyNav(node, items.length, () => cur, show);
+  node.addEventListener('blur', hide);
+}
+
+function chartStack() {
+  const el = $('ch-stack'), w = el.clientWidth, narrow = w < 600;
+  const h = narrow ? 300 : 380, m = { t: 20, r: narrow ? 14 : 132, b: 30, l: 46 };
+  const svg = mk('ch-stack', w, h, `Step chart. BitMine's disclosed ETH holdings rose from 0 to ${fmt(LAST.eth)} between Jun 30, 2025 and ${BIND.asof}, while total ETH supply grew by a net ${fmt(NET)}.`);
+  const x = d3.scaleUtc().domain([dateOf(0), dateOf(K)]).range([m.l, w - m.r]);
+  const y = d3.scaleLinear().domain([0, LAST.eth * 1.08]).nice().range([h - m.b, m.t]);
+  yGrid(svg, y, m.l, w - m.r, y.ticks(narrow ? 4 : 7));
+  xTimeTicks(svg, x, h - m.b + 20, d3.utcMonth.every(narrow ? 6 : 2), m.l, w - m.r);
+  const pts = [{ k: 0, v: 0 }, ...PR.map(p => ({ k: p.k, v: p.eth }))];
+  const X = d => x(dateOf(d.k)), Y = d => y(d.v);
+  svg.append('path').attr('class', 'area-lime').attr('d', d3.area().x(X).y0(y(0)).y1(Y).curve(d3.curveStepAfter)(pts));
+  svg.append('path').attr('class', 'ln ln-lime').attr('d', d3.line().x(X).y(Y).curve(d3.curveStepAfter)(pts));
+  const net = []; for (let k = 0; k <= K; k++) net.push({ k, v: DATA.supply[k] - S0 });
+  svg.append('path').attr('class', 'ln ln-cyan').attr('d', d3.line().x(X).y(Y)(net));
+  const g = svg.append('g');
+  for (let mm = 1; mm <= 40; mm++) {
+    const p = PR.find(q => q.eth >= mm * 1e6); if (!p || p === LAST) break;
+    const cx = x(dateOf(p.k)), cy = y(p.eth);
+    g.append('circle').attr('class', 'mk f-lime').attr('cx', cx).attr('cy', cy).attr('r', 4);
+    if (!narrow) g.append('text').attr('class', 'lbl-2').attr('x', cx - 8).attr('y', cy - 9).attr('text-anchor', 'end').text(`${mm}M · ${dMY(dateOf(p.k))}`);
+  }
+  const ex = x(dateOf(K));
+  if (narrow) {
+    svg.append('text').attr('class', 'lbl').attr('x', ex - 8).attr('y', y(LAST.eth) - 12).attr('text-anchor', 'end').text(`BitMine ${mil(LAST.eth)}`);
+    svg.append('text').attr('class', 'lbl').attr('x', ex - 8).attr('y', y(NET) - 12).attr('text-anchor', 'end').text(`Net new ${mil(NET)}`);
+  } else {
+    endLabel(svg, ex + 14, y(LAST.eth), 'BitMine', fmt(LAST.eth));
+    endLabel(svg, ex + 14, y(NET), 'Net new ETH', fmt(NET));
+  }
+  svg.append('circle').attr('class', 'mk f-lime').attr('cx', ex).attr('cy', y(LAST.eth)).attr('r', 4.5);
+  svg.append('circle').attr('class', 'mk f-cyan').attr('cx', ex).attr('cy', y(NET)).attr('r', 4.5);
+  crosshair(svg, { x0: m.l, x1: w - m.r, y0: m.t, y1: h - m.b }, PR.map(p => p.k), k => x(dateOf(k)), k => {
+    const p = PR[prAt[k]], nn = DATA.supply[k] - S0;
+    return { title: `As of ${dLong(dateOf(k))}`, rows: [
+      { c: 'var(--lime)', l: 'BitMine holds', v: fmt(p.eth) },
+      { l: 'Added this release', v: sgn(p.add) },
+      { c: 'var(--cyan)', l: 'Net new ETH since Jun 30, 2025', v: fmt(nn) },
+      { l: 'Share of all ETH', v: pct(p.share, 3) }
+    ], marks: [{ y: y(p.eth), c: 'var(--lime)' }, { y: y(nn), c: 'var(--cyan)' }] };
+  });
+}
+
+function chartAdds() {
+  const el = $('ch-adds'), w = el.clientWidth, narrow = w < 600;
+  const h = narrow ? 240 : 290, m = { t: 26, r: 14, b: 30, l: 46 };
+  const svg = mk('ch-adds', w, h, `Bar chart of ETH BitMine added per release, peaking at ${fmt(PEAK.add)} in the week to ${BIND.peakdate}, against the network's net new ETH over the same days, about ${BIND.weekly} a week.`);
+  const x = d3.scaleBand().domain(d3.range(PR.length)).range([m.l, w - m.r]).paddingInner(0.3).paddingOuter(0.15);
+  const y = d3.scaleLinear().domain([0, PEAK.add * 1.1]).nice().range([h - m.b, m.t]);
+  yGrid(svg, y, m.l, w - m.r, y.ticks(4));
+  bandMonths(svg, x, PR, p => dateOf(p.k), h - m.b + 20, narrow ? 6 : 2);
+  const bw = Math.min(24, x.bandwidth()), off = (x.bandwidth() - bw) / 2;
+  const bars = svg.append('g').selectAll('path').data(PR).join('path').attr('class', 'f-lime').attr('d', (p, i) => barPath(x(i) + off, y(0), bw, y(p.add), 4));
+  svg.append('path').attr('class', 'ln ln-cyan').attr('d', d3.line().x((p, i) => x(i) + x.bandwidth() / 2).y(p => y(p.netNew))(PR));
+  const pi = PR.indexOf(PEAK), pd = dateOf(PEAK.k);
+  svg.append('text').attr('class', 'lbl').attr('x', x(pi) + off + bw + 8).attr('y', y(PEAK.add)).attr('dy', '0.75em').text(`${fmt(PEAK.add)} · ${MON[pd.getUTCMonth()]} ${pd.getUTCDate()}, ${pd.getUTCFullYear()}`);
+  barHover(svg, PR, i => x(i) - (x.step() - x.bandwidth()) / 2, x.step(), { y0: m.t, y1: h - m.b }, p => ({
+    title: `Released ${dLong(isoD(p.pr))}`,
+    rows: [
+      { l: 'As of', v: dLong(dateOf(p.k)) },
+      { c: 'var(--lime)', box: true, l: 'BitMine added', v: sgn(p.add) },
+      { c: 'var(--cyan)', l: `Network net new (${p.k - p.prevK} days)`, v: sgn(p.netNew) },
+      { l: 'BitMine vs. network', v: (p.add / p.netNew).toFixed(1) + '×' }
+    ] }), bars);
+}
+
+function chartFlows() {
+  const el = $('ch-flows'), w = el.clientWidth, narrow = w < 600;
+  const h = narrow ? 260 : 320, m = { t: 20, r: 14, b: 30, l: 46 };
+  const WK = []; for (let i = 1; i * 7 <= K; i++) WK.push({ k0: 7 * (i - 1), k1: 7 * i, iss: DATA.iss[7 * i] - DATA.iss[7 * (i - 1)], brn: DATA.burn[7 * i] - DATA.burn[7 * (i - 1)] });
+  const maxI = d3.max(WK, d => d.iss), maxB = d3.max(WK, d => d.brn);
+  const svg = mk('ch-flows', w, h, `Weekly bars: about ${fmt(maxI)} ETH minted at most per week, against at most ${fmt(maxB)} ETH burned per week.`);
+  const x = d3.scaleBand().domain(d3.range(WK.length)).range([m.l, w - m.r]).paddingInner(0.3).paddingOuter(0.15);
+  const lo = -Math.max(2500, Math.ceil(maxB * 1.3 / 2500) * 2500), hi = Math.ceil(maxI * 1.12 / 5000) * 5000;
+  const y = d3.scaleLinear().domain([lo, hi]).range([h - m.b, m.t]);
+  yGrid(svg, y, m.l, w - m.r, y.ticks(6));
+  bandMonths(svg, x, WK, d => dateOf(d.k0 + 1), h - m.b + 20, narrow ? 6 : 2);
+  const bw = Math.min(24, x.bandwidth()), off = (x.bandwidth() - bw) / 2, y0 = y(0);
+  const up = svg.append('g').selectAll('path').data(WK).join('path').attr('class', 'f-cyan').attr('d', (d, i) => barPath(x(i) + off, y0 - 1, bw, y(d.iss), 4));
+  const dn = svg.append('g').selectAll('path').data(WK).join('path').attr('class', 'f-ember').attr('d', (d, i) => barPath(x(i) + off, y0 + 1, bw, Math.max(y0 + 1, y(-d.brn)), 3));
+  svg.append('line').attr('class', 'axis-line').attr('x1', m.l).attr('x2', w - m.r).attr('y1', Math.round(y0) + 0.5).attr('y2', Math.round(y0) + 0.5);
+  const bi = WK.findIndex(d => d.brn === maxB), a = dateOf(WK[bi].k0 + 1), b = dateOf(WK[bi].k1);
+  svg.append('text').attr('class', 'lbl-2').attr('x', x(bi) + off + bw + 6).attr('y', y(-maxB)).attr('dy', '0.32em').text(`−${fmt(maxB)} · ${MON[a.getUTCMonth()]} ${a.getUTCDate()}–${b.getUTCDate()}, ${b.getUTCFullYear()}`);
+  const rng = d => { const a = dateOf(d.k0 + 1), b = dateOf(d.k1); return `${MON[a.getUTCMonth()]} ${a.getUTCDate()} – ${MON[b.getUTCMonth()]} ${b.getUTCDate()}, ${b.getUTCFullYear()}`; };
+  barHover(svg, WK, i => x(i) - (x.step() - x.bandwidth()) / 2, x.step(), { y0: m.t, y1: h - m.b }, d => ({
+    title: `Week of ${rng(d)}`,
+    rows: [
+      { c: 'var(--cyan)', box: true, l: 'Minted', v: sgn(d.iss) },
+      { c: 'var(--ember)', box: true, l: 'Burned', v: sgn(-d.brn) },
+      { l: 'Net change', v: sgn(d.iss - d.brn) }
+    ] }), d3.selectAll([...up.nodes(), ...dn.nodes()]));
+}
+
+function chartLedger() {
+  const el = $('ch-ledger'), w = el.clientWidth, narrow = w < 600;
+  const g0 = LG.crowdsale + LG.genesisOther, pow = LG.powBlock + LG.powUncle, a2 = g0 + pow, a3 = a2 + LG.pos;
+  const rows = [
+    { name: 'Created at launch, 2015', note: `${mil(LG.crowdsale, 1)} crowdsale + ${mil(LG.genesisOther)} other`, a: 0, b: g0, cls: 'f-violet', val: mil(g0), ex: fmt(g0) },
+    { name: 'Mined under proof-of-work, 2015–2022', note: `${mil(LG.powBlock)} block + ${mil(LG.powUncle)} uncle rewards`, a: g0, b: a2, cls: 'f-violet', val: '+' + mil(pow), ex: '+' + fmt(pow) },
+    { name: 'Minted by proof-of-stake since Dec 2020', note: 'staking rewards', a: a2, b: a3, cls: 'f-cyan', val: '+' + mil(LG.pos), ex: '+' + fmt(LG.pos) },
+    { name: 'Burned by EIP-1559 since Aug 2021', note: 'base fees destroyed', a: a3, b: LG.total, cls: 'f-ember', val: '−' + mil(LG.burnt), ex: '−' + fmt(LG.burnt) },
+    { name: 'ETH in existence today', note: `Etherscan, ${BIND.ledgerAsof}`, a: 0, b: LG.total, cls: 'f-violet', val: mil(LG.total), ex: fmt(LG.total), bm: LAST.eth }
+  ];
+  const rowH = 60, m = { t: 6, r: narrow ? 60 : 74, b: 28, l: 2 }, h = m.t + rows.length * rowH + m.b;
+  const svg = mk('ch-ledger', w, h, `Waterfall: ${mil(g0)} ETH at launch, plus ${mil(pow)} mined, plus ${mil(LG.pos)} in staking rewards, minus ${mil(LG.burnt)} burned, equals ${mil(LG.total)} ETH, of which BitMine holds ${mil(LAST.eth)}.`);
+  const x = d3.scaleLinear().domain([0, Math.ceil(a3 * 1.02 / 25e6) * 25e6]).range([m.l, w - m.r]);
+  for (const v of x.ticks(narrow ? 3 : 6)) {
+    const px = Math.round(x(v)) + 0.5;
+    svg.append('line').attr('class', v === 0 ? 'axis-line' : 'grid-line').attr('x1', px).attr('x2', px).attr('y1', m.t).attr('y2', h - m.b);
+    svg.append('text').attr('class', 'tick').attr('x', px).attr('y', h - m.b + 18).attr('text-anchor', v === 0 ? 'start' : 'middle').text(axisFmt(v));
+  }
+  const marks = [];
+  rows.forEach((r, i) => {
+    const top = m.t + i * rowH, by = top + 32, bh = 14, x0 = x(Math.min(r.a, r.b)), x1 = x(Math.max(r.a, r.b));
+    svg.append('text').attr('class', 'row-name').attr('x', m.l).attr('y', top + 13).text(r.name);
+    svg.append('text').attr('class', 'row-note').attr('x', m.l).attr('y', top + 27).text(r.note);
+    if (r.bm) {
+      const xs = x(r.b - r.bm);
+      marks.push(svg.append('rect').datum(r).attr('class', r.cls).attr('x', x0).attr('y', by).attr('width', Math.max(0, xs - 1 - x0)).attr('height', bh).attr('rx', 2).node());
+      marks.push(svg.append('rect').datum(r).attr('class', 'f-lime').attr('x', xs + 1).attr('y', by).attr('width', Math.max(1, x1 - xs - 1)).attr('height', bh).attr('rx', 2).node());
+      svg.append('text').attr('class', 'lbl-2').attr('x', x1).attr('y', top + 27).attr('text-anchor', 'end').text(`BitMine ${mil(r.bm)}`);
+    } else marks.push(svg.append('rect').datum(r).attr('class', r.cls).attr('x', x0).attr('y', by).attr('width', Math.max(1, x1 - x0)).attr('height', bh).attr('rx', 2).node());
+    svg.append('text').attr('class', 'lbl').attr('x', x1 + 8).attr('y', by + bh / 2).attr('dy', '0.35em').text(r.val);
+    if (!narrow && i < rows.length - 2) svg.append('line').attr('class', 'conn').attr('x1', x(r.b)).attr('x2', x(r.b)).attr('y1', by + bh).attr('y2', by + rowH);
+  });
+  const node = svg.node(); let cur = -1;
+  const sel = d3.selectAll(marks);
+  const hide = () => { sel.classed('lift', false); tip.hide(); cur = -1; };
+  function show(i, kb, ev) {
+    cur = i; const r = rows[i]; sel.classed('lift', d => d === r);
+    const rs = [{ l: 'ETH', v: r.ex }];
+    if (r.bm) rs.push({ c: 'var(--lime)', box: true, l: 'BitMine holds', v: fmt(r.bm) }, { l: 'BitMine share', v: pct(r.bm / LG.total, 2) });
+    if (kb) { const b = node.getBoundingClientRect(); tip.show(b.left + x(Math.max(r.a, r.b)), b.top + m.t + i * rowH + 20, r.name, rs); }
+    else tip.show(ev.clientX, ev.clientY, r.name, rs);
+  }
+  svg.append('g').selectAll('rect').data(rows).join('rect').attr('class', 'hit').attr('x', 0).attr('width', w).attr('y', (d, i) => m.t + i * rowH).attr('height', rowH)
+    .on('pointermove', (ev, d) => show(rows.indexOf(d), false, ev)).on('pointerleave', hide);
+  keyNav(node, rows.length, () => cur, show);
+  node.addEventListener('blur', hide);
+}
+
+function chartLong() {
+  const el = $('ch-long'), w = el.clientWidth, narrow = w < 600;
+  const h = narrow ? 260 : 320, m = { t: 30, r: narrow ? 14 : 78, b: 30, l: 54 };
+  const st = Date.parse(DATA.long.start + 'T00:00:00Z');
+  const pts = DATA.long.v.map((v, i) => ({ d: new Date(st + i * 7 * DAY), v }));
+  const svg = mk('ch-long', w, h, `Line chart of total ETH supply from ${mil(pts[0].v)} in August 2021 to ${mil(pts[pts.length - 1].v)} on ${BIND.asof}.`);
+  const x = d3.scaleUtc().domain([pts[0].d, pts[pts.length - 1].d]).range([m.l, w - m.r]);
+  const y = d3.scaleLinear().domain(d3.extent(pts, p => p.v)).nice().range([h - m.b, m.t]);
+  yGrid(svg, y, m.l, w - m.r, y.ticks(narrow ? 4 : 6));
+  xTimeTicks(svg, x, h - m.b + 20, d3.utcYear.every(1), m.l, w - m.r, d => String(d.getUTCFullYear()));
+  const ex0 = x(dateOf(1)), ex1 = w - m.r;
+  svg.append('rect').attr('class', 'era').attr('x', ex0).attr('y', m.t).attr('width', Math.max(0, ex1 - ex0)).attr('height', h - m.b - m.t);
+  svg.append('text').attr('class', 'lbl-2').attr('x', ex0 + 6).attr('y', m.t + 14).text('BitMine buying');
+  [['2021-08-05', 'Burn begins'], ['2022-09-15', 'The Merge'], ['2024-03-13', 'Dencun']].forEach(([iso, label]) => {
+    const px = x(isoD(iso)); if (px < m.l - 1 || px > w - m.r) return;
+    svg.append('line').attr('class', 'evt').attr('x1', px).attr('x2', px).attr('y1', m.t - 16).attr('y2', h - m.b);
+    svg.append('text').attr('class', 'lbl-2').attr('x', px + 5).attr('y', m.t - 8).text(label);
+  });
+  svg.append('path').attr('class', 'ln ln-violet').attr('d', d3.line().x(p => x(p.d)).y(p => y(p.v))(pts));
+  const merge = isoD('2022-09-15');
+  const low = pts.filter(p => p.d >= merge).reduce((a, b) => (b.v < a.v ? b : a));
+  svg.append('circle').attr('class', 'mk f-violet').attr('cx', x(low.d)).attr('cy', y(low.v)).attr('r', 4);
+  svg.append('text').attr('class', 'lbl-2').attr('x', x(low.d)).attr('y', y(low.v) + 18).attr('text-anchor', 'middle').text(`${mil(low.v)} low · ${MON[low.d.getUTCMonth()]} ${low.d.getUTCFullYear()}`);
+  const lp = pts[pts.length - 1];
+  svg.append('circle').attr('class', 'mk f-violet').attr('cx', x(lp.d)).attr('cy', y(lp.v)).attr('r', 4.5);
+  if (narrow) svg.append('text').attr('class', 'lbl').attr('x', x(lp.d) - 8).attr('y', y(lp.v) - 12).attr('text-anchor', 'end').text(mil(lp.v));
+  else endLabel(svg, x(lp.d) + 14, y(lp.v), 'Today', mil(lp.v));
+  crosshair(svg, { x0: m.l, x1: w - m.r, y0: m.t, y1: h - m.b }, pts.map((p, i) => i), i => x(pts[i].d), i => ({
+    title: dLong(pts[i].d),
+    rows: [{ c: 'var(--violet)', l: 'ETH in existence', v: fmt(pts[i].v) }],
+    marks: [{ y: y(pts[i].v), c: 'var(--violet)' }]
+  }));
+}
+
+function table() {
+  const rows = [...PR].reverse().map(p => {
+    const tr = document.createElement('tr');
+    const vals = [dLong(isoD(p.pr)), dLong(dateOf(p.k)), fmt(p.eth), sgn(p.add), '$' + NF.format(Math.round(p.px)), pct(p.share, 3), p.stated ? p.stated + (p.denom ? ` of ${p.denom}` : '') : '—', p.staked != null ? fmt(p.staked) : '—'];
+    for (const v of vals) { const td = document.createElement('td'); td.textContent = v; tr.appendChild(td); }
+    const td = document.createElement('td'); td.className = 'src';
+    const a = document.createElement('a'); a.href = p.url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Release ↗';
+    td.appendChild(a); tr.appendChild(td);
+    return tr;
+  });
+  $('tbody').replaceChildren(...rows);
+}
+
+function charts() {
+  if (!window.d3) return;
+  for (const f of [chartStack, chartAdds, chartFlows, chartLedger, chartLong]) { try { f(); } catch (e) { console.error(e); } }
+}
+table();
+charts();
+let cw = 0, ct = 0;
+new ResizeObserver(() => { const w = $('chapters').clientWidth; if (w === cw) return; cw = w; clearTimeout(ct); ct = setTimeout(charts, 120); }).observe($('chapters'));
+})();
+</script>

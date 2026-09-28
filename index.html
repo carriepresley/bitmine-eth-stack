@@ -1,0 +1,1069 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BitMine's ETH Stack</title>
+<meta name="description" content="A time-lapse of BitMine's ETH accumulation inside the full ETH supply: new ETH minted, ETH burned, and the climb toward 5%. Updated every Monday.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Martian+Mono:wght@300..600&family=Oxanium:wght@500;600;700&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --void:#05050B;
+  --line:#1A1930;
+  --axis:#2C2A45;
+  --ink:#F3F2FB;
+  --ink-2:#B3B0CF;
+  --ink-3:#8C88B0;
+  --lime:#C6FF00;
+  --violet:#8C70FF;
+  --cyan:#1C9FD6;
+  --ember:#E8532F;
+  --f-display:"Oxanium","Segoe UI",system-ui,sans-serif;
+  --f-mono:"Martian Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --f-body:"Geist",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --gutter:clamp(16px,4vw,44px);
+  --maxw:1180px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--void)}
+body{margin:0;background:var(--void);color:var(--ink);font:400 15px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+a{color:var(--ink);text-decoration:underline;text-decoration-color:rgba(198,255,0,.45);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--lime)}
+:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+.wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gutter)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+.sw{flex:none;display:inline-block;width:9px;height:9px}
+svg [hidden]{display:none}
+.sw.lime{background:var(--lime)}.sw.violet{background:var(--violet)}.sw.cyan{background:var(--cyan)}.sw.ember{background:var(--ember)}
+
+/* ---------- observatory ---------- */
+.obs{position:relative;overflow:hidden;isolation:isolate;background:radial-gradient(130% 60% at 50% 100%,#1A0E44 0%,#0A0820 42%,var(--void) 75%)}
+#sky{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+.obs::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.02) 0 1px,transparent 1px 4px)}
+.obs-inner{position:relative;z-index:2}
+.topbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 16px;padding-block:18px 0;font:500 10.5px/1.4 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.topbar b{color:var(--ink);font-weight:500}
+.mark{display:inline-flex;align-items:center;gap:10px;color:var(--ink)}
+.mark i{width:9px;height:9px;background:var(--lime);box-shadow:0 0 10px rgba(198,255,0,.8)}
+.intro{padding-block:clamp(24px,4vw,44px) 0;max-width:940px}
+.eyebrow{margin:0 0 16px;font:500 10.5px/1.5 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+h1{margin:0;font:600 clamp(30px,5vw,58px)/1.05 var(--f-display);letter-spacing:-.005em;text-wrap:balance}
+h1 .hl{color:var(--lime);text-shadow:0 0 30px rgba(198,255,0,.35)}
+.dek{margin:18px 0 0;max-width:66ch;color:var(--ink-2);font-size:clamp(15px,1.5vw,17px)}
+.dek b{color:var(--ink);font-weight:500}
+
+.strip{display:grid;grid-template-columns:minmax(160px,1.25fr) repeat(3,minmax(0,1fr));gap:1px;margin-top:clamp(20px,3vw,32px);background:rgba(140,112,255,.26);border:1px solid rgba(140,112,255,.26)}
+.cell{min-width:0;padding:12px 14px 13px;background:rgba(6,6,17,.9)}
+.cell .k{display:flex;align-items:center;gap:8px;font:500 9.5px/1.3 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cell .v{margin-top:7px;font:500 clamp(13px,1.6vw,20px)/1.2 var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink)}
+.cell.date{grid-row:span 2;display:flex;flex-direction:column;justify-content:center}
+.cell.date .v{font-size:clamp(17px,2.1vw,26px);letter-spacing:.02em}
+.cell.date .u{margin-top:6px;font:500 10px/1.3 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.cell.bm{box-shadow:inset 0 2px 0 var(--lime)}
+@media (max-width:640px){.strip{grid-template-columns:1fr 1fr}.cell.date{grid-row:auto;grid-column:1/-1}.cell .k{white-space:normal;overflow:visible;align-items:flex-start}}
+
+.viz{position:relative;height:clamp(440px,50vw,620px)}
+.viz.narrow{height:540px}
+.vlabel{position:absolute;left:0;top:0;transform:translate(-50%,-50%);font:500 9.5px/1.3 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);white-space:nowrap;pointer-events:none}
+.vlabel.rt{transform:translate(-100%,-50%)}
+.toast{position:absolute;left:50%;top:8px;transform:translate(-50%,-6px);opacity:0;transition:opacity .25s ease,transform .25s ease;pointer-events:none;max-width:calc(100% - 16px);padding:8px 12px;border:1px solid rgba(198,255,0,.55);background:rgba(5,5,11,.9);font:500 11px/1.4 var(--f-mono);letter-spacing:.04em;color:var(--ink);text-align:center;box-shadow:0 0 24px rgba(198,255,0,.16)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast .td{color:var(--ink-3);margin-right:10px}
+
+.transport{display:grid;grid-template-columns:auto auto minmax(0,1fr);align-items:center;gap:14px 18px;padding-block:4px 30px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:11px 16px 11px 14px;border:0;background:var(--lime);color:#0A0F00;font:600 11px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap;clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,9px 100%,0 calc(100% - 9px));box-shadow:0 0 24px rgba(198,255,0,.25)}
+.btn svg{width:11px;height:11px;fill:currentColor}
+.btn:hover{filter:brightness(1.08)}
+.seg{display:inline-flex;border:1px solid var(--axis)}
+.seg button{padding:9px 11px;border:0;background:transparent;color:var(--ink-2);font:500 11px/1 var(--f-mono);cursor:pointer}
+.seg button+button{border-left:1px solid var(--axis)}
+.seg button[aria-pressed="true"]{background:rgba(198,255,0,.14);color:var(--ink)}
+.scrub{position:relative;min-width:0;padding-top:16px}
+.ticks{position:absolute;left:0;right:0;top:0;height:16px}
+.tk{position:absolute;top:0;transform:translateX(-50%);font:500 9px/1 var(--f-mono);letter-spacing:.04em;color:var(--ink-3)}
+.tk::after{content:"";position:absolute;left:50%;top:11px;width:1px;height:7px;background:var(--ink-3);opacity:.7}
+#scrub{-webkit-appearance:none;appearance:none;display:block;width:100%;height:24px;margin:0;background:transparent;cursor:pointer;--p:100%}
+#scrub::-webkit-slider-runnable-track{height:3px;background:linear-gradient(90deg,var(--lime) 0 var(--p),var(--axis) var(--p) 100%)}
+#scrub::-moz-range-track{height:3px;background:var(--axis)}
+#scrub::-moz-range-progress{height:3px;background:var(--lime)}
+#scrub::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;margin-top:-5.5px;border:0;background:var(--lime);transform:rotate(45deg);box-shadow:0 0 12px rgba(198,255,0,.8)}
+#scrub::-moz-range-thumb{width:12px;height:12px;border:0;border-radius:0;background:var(--lime);transform:rotate(45deg);box-shadow:0 0 12px rgba(198,255,0,.8)}
+.ends{display:flex;justify-content:space-between;gap:12px;font:500 9.5px/1.3 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.legend{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 20px;font:500 10px/1.4 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.legend .dim{color:var(--ink-3)}
+@media (max-width:640px){.transport{grid-template-columns:auto 1fr}.scrub{grid-column:1/-1}}
+
+/* ---------- chapters ---------- */
+.chapters{padding-block:clamp(40px,6vw,80px) 0}
+.chapter{padding-block:clamp(44px,6vw,80px) 0}
+.chapter:first-child{padding-top:0}
+.ch-eyebrow{display:flex;align-items:center;gap:12px;margin:0;font:500 10.5px/1.4 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+.ch-eyebrow::before{content:"";width:28px;height:1px;background:var(--lime)}
+h2{margin:14px 0 0;max-width:24ch;font:600 clamp(26px,3.6vw,44px)/1.08 var(--f-display);text-wrap:balance}
+.lede{margin:16px 0 0;max-width:68ch;color:var(--ink-2)}
+.lede b{color:var(--ink);font-weight:500}
+.panel{position:relative;margin-top:28px;padding:clamp(16px,2.4vw,26px);border:1px solid var(--line);background:linear-gradient(180deg,rgba(140,112,255,.055),rgba(8,8,26,.5) 60%)}
+.panel::before,.panel::after{content:"";position:absolute;width:12px;height:12px;border:solid rgba(198,255,0,.75);pointer-events:none}
+.panel::before{top:-1px;left:-1px;border-width:1px 0 0 1px}
+.panel::after{right:-1px;bottom:-1px;border-width:0 1px 1px 0}
+.panel h3{margin:0;font:600 17px/1.3 var(--f-display);letter-spacing:.01em}
+.note{margin:12px 0 0;max-width:84ch;font:400 12.5px/1.55 var(--f-body);color:var(--ink-3)}
+.keys{display:flex;flex-wrap:wrap;gap:6px 20px;margin:12px 0 4px;font:500 10.5px/1.4 var(--f-mono);letter-spacing:.03em;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:8px}
+.key .ln{display:inline-block;width:18px;height:2px}
+.key .bx{display:inline-block;width:10px;height:10px}
+.chart{position:relative;width:100%;margin-top:8px}
+.chart svg{display:block;max-width:100%;overflow:visible}
+.chart svg:focus{outline:none}
+.chart svg:focus-visible{outline:2px solid var(--lime);outline-offset:4px}
+
+.eq{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;margin-top:28px}
+.term{flex:1 1 180px;min-width:0;padding:14px 16px;border:1px solid var(--line);background:rgba(8,8,26,.6)}
+.term .k{display:flex;align-items:center;gap:8px;font:500 9.5px/1.3 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.term .v{margin-top:8px;font:500 clamp(17px,2vw,24px)/1.15 var(--f-mono);white-space:nowrap}
+.op{display:flex;align-items:center;justify-content:center;flex:0 0 auto;width:22px;font:500 22px/1 var(--f-mono);color:var(--ink-3)}
+@media (max-width:640px){.op{width:100%;height:12px;font-size:18px}}
+
+/* svg */
+.grid-line{stroke:var(--line);stroke-width:1;shape-rendering:crispEdges}
+.axis-line{stroke:var(--axis);stroke-width:1;shape-rendering:crispEdges}
+.tick{fill:var(--ink-3);font:400 10px var(--f-mono)}
+.lbl{fill:var(--ink);font:500 12px var(--f-mono)}
+.lbl-2{fill:var(--ink-2);font:400 10px var(--f-mono);letter-spacing:.03em}
+.row-name{fill:var(--ink);font:500 13px var(--f-body)}
+.row-note{fill:var(--ink-3);font:400 10px var(--f-mono)}
+.ln{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.ln-lime{stroke:var(--lime)}.ln-cyan{stroke:var(--cyan)}.ln-violet{stroke:var(--violet)}
+.area-lime{fill:var(--lime);fill-opacity:.1}
+.f-lime{fill:var(--lime)}.f-cyan{fill:var(--cyan)}.f-ember{fill:var(--ember)}.f-violet{fill:var(--violet)}
+.mk{stroke:var(--void);stroke-width:2}
+.cross{stroke:var(--ink-3);stroke-width:1}
+.era{fill:var(--lime);fill-opacity:.06}
+.evt{stroke:var(--axis);stroke-width:1}
+.conn{stroke:var(--ink-3);stroke-width:1;opacity:.45}
+.hit{fill:transparent}
+.lift{filter:brightness(1.4)}
+
+/* table */
+details.data{margin-top:24px;border:1px solid var(--line);background:rgba(8,8,26,.5)}
+details.data summary{cursor:pointer;padding:14px 18px;font:500 11px/1.4 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+details.data summary::marker{color:var(--lime)}
+.tbl{overflow-x:auto;border-top:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font:400 12px/1.4 var(--f-mono);font-variant-numeric:tabular-nums}
+th,td{padding:9px 14px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th:nth-child(-n+2),td:nth-child(-n+2){text-align:left}
+thead th{background:#0A0A1C;font:500 9.5px/1.3 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+tbody tr:hover{background:rgba(140,112,255,.06)}
+td.src a{color:var(--ink-2)}
+
+.foot{margin-top:clamp(56px,7vw,96px);padding-block:32px 56px;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:28px 48px;font-size:13px;color:var(--ink-2)}
+.foot h4{margin:0 0 10px;font:500 10.5px/1.4 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.foot ol,.foot ul{margin:0;padding-left:18px;display:grid;gap:8px}
+.disc{grid-column:1/-1;margin:0;font:400 11px/1.6 var(--f-mono);color:var(--ink-3)}
+
+/* tooltip */
+.tip{position:fixed;left:0;top:0;z-index:50;pointer-events:none;min-width:200px;max-width:300px;padding:10px 12px;background:rgba(7,7,20,.97);border:1px solid rgba(140,112,255,.4);box-shadow:0 12px 32px rgba(0,0,0,.55);font:400 11.5px/1.5 var(--f-mono);color:var(--ink-2);opacity:0;transition:opacity .12s}
+.tip.on{opacity:1}
+.tip .t{margin-bottom:6px;color:var(--ink);font-weight:500;letter-spacing:.03em}
+.tip .r{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.tip .l{display:inline-flex;align-items:center;gap:7px}
+.tip .l i{display:inline-block;width:12px;height:2px}
+.tip .l i.bx{width:8px;height:8px}
+.tip b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.toast,.tip{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="obs" id="obs">
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <div class="wrap obs-inner">
+    <header class="topbar">
+      <span class="mark"><i aria-hidden="true"></i>ETH supply × BitMine (BMNR)</span>
+      <span>Weekly snapshot · data through <b data-bind="asof">Sep 27, 2026</b></span>
+    </header>
+
+    <section class="intro" aria-labelledby="h1">
+      <p class="eyebrow">Jun 30, 2025 → <span data-bind="asof">Sep 27, 2026</span> · <span data-bind="releases">66</span> holdings disclosures</p>
+      <h1 id="h1">BitMine now holds <span class="hl" data-bind="share">4.92%</span> of all the ETH in existence.</h1>
+      <p class="dek">Every dot below is 10,000 ETH. Together they are the entire supply, about <b data-bind="dots">12,208</b> dots. Press play to watch <span data-bind="releases">66</span> weekly disclosures pull <span data-bind="blocks">600</span> of them into BitMine's stack while staking mints new ETH and fees burn a little. The ring is marked in 5% steps, and BitMine's lime arc <span data-bind="ring">has filled 98% of one</span>.</p>
+    </section>
+
+    <div class="strip" role="group" aria-label="Readout for the date on the timeline">
+      <div class="cell date"><div class="k">Timeline</div><div class="v" id="h-date">SEP 27 2026</div><div class="u" id="h-week">Week 65 of 65</div></div>
+      <div class="cell bm"><div class="k"><i class="sw lime"></i>BitMine holds (ETH)</div><div class="v" id="h-bm">6,001,302</div></div>
+      <div class="cell"><div class="k">Share of all ETH</div><div class="v" id="h-share">4.916%</div></div>
+      <div class="cell"><div class="k">Latest weekly buy</div><div class="v" id="h-add">+17,362</div></div>
+      <div class="cell"><div class="k"><i class="sw violet"></i>ETH in existence</div><div class="v" id="h-sup">122,081,872</div></div>
+      <div class="cell"><div class="k"><i class="sw cyan"></i>Minted since Jun 30, 2025</div><div class="v" id="h-iss">+1,255,566</div></div>
+      <div class="cell"><div class="k"><i class="sw ember"></i>Burned since Jun 30, 2025</div><div class="v" id="h-brn">−42,049</div></div>
+    </div>
+
+    <div class="viz" id="viz" role="img" aria-label="Animated view of the ETH supply in dots of 10,000 ETH. The orb holds everyone else's ETH; the block stack beside it is BitMine's, just under a line marking 5% of all ETH.">
+      <div class="vlabel" id="lab-orb">All other ETH · 1 dot = 10,000 ETH</div>
+      <div class="vlabel" id="lab-vault">BitMine · 1 block = 10,000 ETH</div>
+      <div class="vlabel" id="lab-5">5% of all ETH</div>
+      <div class="toast" id="toast"></div>
+    </div>
+
+    <div class="transport">
+      <button class="btn" id="play" type="button">
+        <svg viewBox="0 0 12 12" aria-hidden="true"><path id="ico-play" d="M2 1l9 5-9 5z"/><path id="ico-pause" d="M2 1h3v10H2zM7 1h3v10H7z" hidden/></svg>
+        <span id="play-lbl">Replay from Jun 30, 2025</span>
+      </button>
+      <div class="seg" role="group" aria-label="Playback speed">
+        <button type="button" data-speed="7" aria-pressed="false" title="One week per second">1×</button><button type="button" data-speed="28" aria-pressed="true" title="Four weeks per second">4×</button>
+      </div>
+      <div class="scrub">
+        <div class="ticks" id="ticks" aria-hidden="true"></div>
+        <input id="scrub" type="range" min="1" max="455" step="1" value="455" aria-label="Timeline date">
+        <div class="ends"><span>Jun 30, 2025</span><span data-bind="asof">Sep 27, 2026</span></div>
+      </div>
+      <div class="legend">
+        <span><i class="sw violet"></i>Everyone else's ETH</span>
+        <span><i class="sw lime"></i>BitMine's ETH</span>
+        <span><i class="sw cyan"></i>Minted since Jun 30, 2025</span>
+        <span><i class="sw ember"></i>Burned (flashes out)</span>
+        <span class="dim">1 dot or block = 10,000 ETH</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap chapters" id="chapters">
+  <section class="chapter" id="stack" aria-labelledby="c1">
+    <p class="ch-eyebrow">The stack</p>
+    <h2 id="c1">BitMine bought <span data-bind="mult">4.9×</span> more ETH than the network added</h2>
+    <p class="lede">When BitMine announced its ETH treasury on June 30, 2025, there were <b data-bind="s0">120,868,355</b> ETH. Since then the supply has grown by a net <b data-bind="net">1,213,517</b>, while BitMine disclosed <b data-bind="bm">6,001,302</b>. In <span data-bind="beat">59</span> of the <span data-bind="intervals">65</span> intervals between its releases it added more ETH than the entire network did. It fell short only in the weeks ending <span data-bind="shortfalls">Jul 19, Jul 26, Aug 2, Aug 9, Aug 16 and Sep 27, 2026</span>; it slowed ETH buying in July and August 2026 while it bought back its own stock.</p>
+
+    <div class="panel">
+      <h3>Cumulative ETH since June 30, 2025</h3>
+      <div class="keys"><span class="key"><i class="ln" style="background:var(--lime)"></i>BitMine's disclosed holdings</span><span class="key"><i class="ln" style="background:var(--cyan)"></i>Net new ETH on the network</span></div>
+      <div class="chart" id="ch-stack"></div>
+      <p class="note">Holdings step up on each release's "as of" date. Net new ETH is total supply minus the <span data-bind="s0">120,868,355</span> ETH that existed on June 30, 2025.</p>
+    </div>
+
+    <div class="panel">
+      <h3>ETH added per release vs. the network's net new ETH</h3>
+      <div class="keys"><span class="key"><i class="bx" style="background:var(--lime)"></i>ETH BitMine added since its previous release</span><span class="key"><i class="ln" style="background:var(--cyan)"></i>Net new ETH on the whole network over the same days</span></div>
+      <div class="chart" id="ch-adds"></div>
+      <p class="note">Most releases are seven days apart; a few in July and August 2025 came three to six days apart. The biggest single addition was <span data-bind="peak">373,110</span> ETH in the week to <span data-bind="peakdate">Aug 17, 2025</span>.</p>
+    </div>
+  </section>
+
+  <section class="chapter" id="flows" aria-labelledby="c2">
+    <p class="ch-eyebrow">Created vs. burned</p>
+    <h2 id="c2">Staking mints about <span data-bind="ratio">30</span> ETH for every 1 that gets burned</h2>
+    <p class="lede">ETH supply changes with every block. Validators earn newly minted ETH as staking rewards, and every transaction destroys its base fee. Fees have stayed low, so the burn is small, and supply has grown by about <b data-bind="weekly">18,670</b> ETH a week since BitMine started buying.</p>
+
+    <div class="eq" role="group" aria-label="Supply since June 30, 2025">
+      <div class="term"><div class="k"><i class="sw violet"></i>ETH on Jun 30, 2025</div><div class="v" data-bind="s0">120,868,355</div></div>
+      <div class="op" aria-hidden="true">+</div><span class="sr">plus</span>
+      <div class="term"><div class="k"><i class="sw cyan"></i>Minted by staking</div><div class="v" data-bind="iss">1,255,566</div></div>
+      <div class="op" aria-hidden="true">−</div><span class="sr">minus</span>
+      <div class="term"><div class="k"><i class="sw ember"></i>Burned in fees</div><div class="v" data-bind="brn">42,049</div></div>
+      <div class="op" aria-hidden="true">=</div><span class="sr">equals</span>
+      <div class="term"><div class="k"><i class="sw violet"></i>ETH on <span data-bind="asof">Sep 27, 2026</span></div><div class="v" data-bind="se">122,081,872</div></div>
+    </div>
+
+    <div class="panel">
+      <h3>ETH minted and burned, week by week</h3>
+      <div class="keys"><span class="key"><i class="bx" style="background:var(--cyan)"></i>Minted (staking rewards)</span><span class="key"><i class="bx" style="background:var(--ember)"></i>Burned (base fees)</span></div>
+      <div class="chart" id="ch-flows"></div>
+      <p class="note">Weeks run Monday to Sunday. Burned ETH is derived as new issuance minus the change in total supply.</p>
+    </div>
+  </section>
+
+  <section class="chapter" id="supply" aria-labelledby="c3">
+    <p class="ch-eyebrow">All ETH, ever</p>
+    <h2 id="c3">Where all <span data-bind="totalWords">122 million</span> ETH came from</h2>
+    <p class="lede">About 72 million ETH existed at launch in 2015. Proof-of-work miners earned 50.4 million more before the Merge in September 2022, and proof-of-stake has paid <span data-bind="ledgerPos">4.35 million</span> in rewards since December 2020. EIP-1559 has burned <span data-bind="ledgerBurn">4.63 million</span> since August 2021. BitMine's <b data-bind="bmWords">6.00 million</b> is more than all the ETH ever burned and more than every staking reward ever paid.</p>
+
+    <div class="panel">
+      <h3>The ETH ledger, all time</h3>
+      <div class="keys"><span class="key"><i class="bx" style="background:var(--violet)"></i>Created or mined</span><span class="key"><i class="bx" style="background:var(--cyan)"></i>Staking rewards</span><span class="key"><i class="bx" style="background:var(--ember)"></i>Burned</span><span class="key"><i class="bx" style="background:var(--lime)"></i>BitMine's holdings</span></div>
+      <div class="chart" id="ch-ledger"></div>
+      <p class="note">Source: Etherscan supply breakdown, <span data-bind="ledgerAsof">Sep 28, 2026</span>.</p>
+    </div>
+
+    <div class="panel">
+      <h3>Total ETH supply since the burn began</h3>
+      <div class="keys"><span class="key"><i class="ln" style="background:var(--violet)"></i>ETH in existence</span><span class="key"><i class="bx" style="background:rgba(198,255,0,.25)"></i>Since BitMine started buying</span></div>
+      <div class="chart" id="ch-long"></div>
+      <p class="note">Burning outpaced issuance after the Merge, and supply fell to about 120.07 million by April 2024. The Dencun upgrade in March 2024 moved rollup data to cheaper blob space. Fees and the burn dropped, and supply has grown since. BitMine started buying at <span data-bind="s0M">120.87 million</span>.</p>
+    </div>
+  </section>
+
+  <section class="chapter" id="data" aria-label="Data table">
+    <p class="ch-eyebrow">The data</p>
+    <details class="data">
+      <summary>All <span data-bind="releases">66</span> BitMine ETH holdings releases</summary>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Release</th><th>As of</th><th>ETH held</th><th>Added</th><th>ETH price</th><th>Share of supply</th><th>BitMine stated</th><th>Staked</th><th>Source</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <footer class="foot">
+    <div>
+      <h4>Sources</h4>
+      <ol>
+        <li>BitMine Immersion Technologies weekly ETH holdings releases, Jul 14, 2025 to <span data-bind="released">Sep 28, 2026</span>, on PR Newswire, cross-checked against the same releases filed with the SEC as 8-K exhibits (<a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;CIK=0001829311&amp;type=8-K" target="_blank" rel="noopener">EDGAR</a>). Each release is linked in the table.</li>
+        <li><a href="https://docs.coinmetrics.io/" target="_blank" rel="noopener">Coin Metrics Community API</a>: daily ETH supply (SplyCur) and issuance (IssTotNtv).</li>
+        <li><a href="https://ultrasound.money" target="_blank" rel="noopener">ultrasound.money</a>: supply and burn totals, used as a cross-check.</li>
+        <li><a href="https://etherscan.io/stat/supply" target="_blank" rel="noopener">Etherscan</a>: all-time supply breakdown.</li>
+      </ol>
+    </div>
+    <div>
+      <h4>Method</h4>
+      <ul>
+        <li>One dot or block is 10,000 ETH; counts are rounded.</li>
+        <li>Holdings are BitMine's disclosed totals at each release's stated "as of" time.</li>
+        <li>Share of supply divides holdings by on-chain supply on the same date. BitMine's releases used 120.7 million as the denominator until September 2026, so their stated percentages run slightly higher.</li>
+        <li>Burned ETH is derived each day as new issuance minus the change in total supply.</li>
+        <li>Supply figures from different providers differ by a few thousand ETH, depending on how they count pending validator deposits.</li>
+      </ul>
+    </div>
+    <p class="disc">Independent visualization built from public data. Not an official BitMine publication. Not investment advice. Updated every Monday after BitMine's weekly release.</p>
+  </footer>
+</main>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+(() => {
+'use strict';
+const DATA = {"asOf":"2026-09-28","base":"2025-06-29","supply":[120868355,120870773,120873256,120875738,120878262,120880812,120883425,120886037,120888500,120891023,120893366,120895539,120897680,120900234,120902783,120904987,120907332,120909353,120911130,120913248,120915790,120918242,120920643,120923120,120925622,120928157,120930738,120933353,120935966,120938534,120940949,120943244,120945518,120948064,120950674,120953292,120955891,120958211,120960998,120963576,120966116,120968684,120971279,120973816,120976264,120978653,120981020,120983548,120986163,120988776,120991372,120993771,120996530,120999131,121001496,121004097,121006692,121009263,121011840,121014374,121016947,121019430,121022062,121024695,121026273,121028854,121031433,121034005,121036597,121039219,121041855,121044437,121047027,121049536,121052140,121054603,121057358,121059998,121062451,121065008,121067600,121069544,121072582,121075199,121077832,121080412,121083023,121085638,121088040,121090655,121093278,121095887,121098070,121100636,121103211,121105777,121108366,121110998,121113634,121116162,121118713,121121227,121123916,121124027,121126349,121128925,121131512,121134078,121136649,121139202,121141649,121144280,121146904,121149531,121152129,121154742,121157352,121159971,121162620,121165267,121167827,121170443,121173039,121175611,121178232,121180878,121183525,121186017,121188242,121190798,121193112,121195595,121198227,121200876,121203479,121206095,121208717,121211277,121213836,121216479,121219116,121221686,121224281,121226851,121229378,121231845,121234485,121237133,121239755,121242372,121245013,121247661,121250304,121252953,121255610,121258231,121260873,121263025,121265801,121268364,121270987,121273550,121276122,121278704,121281289,121283902,121286513,121289163,121291826,121294469,121297129,121299783,121302432,121305071,121307739,121310408,121313070,121315727,121318391,121321054,121323716,121326381,121329052,121331712,121334368,121337037,121339710,121342373,121345032,121347701,121350359,121352992,121355654,121358314,121360985,121363647,121366320,121368968,121371616,121374275,121376934,121379619,121382303,121384997,121387679,121390349,121392997,121395670,121398339,121401029,121403720,121406407,121409095,121411781,121414395,121417005,121419384,121422034,121424651,121427288,121429925,121432039,121434488,121437172,121439815,121442496,121445190,121447875,121450541,121453241,121455953,121458673,121461387,121464095,121466801,121469508,121472224,121474955,121477684,121480401,121483115,121485821,121488531,121491249,121493959,121496686,121499391,121502090,121504786,121507500,121510199,121512914,121515640,121518350,121521068,121523790,121526515,121529235,121531990,121534754,121537462,121540176,121542885,121545625,121548358,121551113,121553737,121556465,121559214,121561970,121564725,121567474,121570244,121573012,121575776,121578512,121581258,121584015,121586781,121589558,121592340,121595121,121597894,121600658,121603444,121606232,121609022,121611800,121614579,121617357,121620142,121622921,121625591,121628199,121630804,121633296,121635998,121638240,121640654,121643465,121646198,121648817,121651283,121653849,121656436,121659004,121661714,121664466,121667224,121669904,121672663,121675340,121677953,121680483,121683237,121685963,121688580,121691223,121693990,121696711,121699267,121702020,121704783,121707547,121710317,121713089,121715825,121718607,121721391,121724186,121726975,121729767,121732551,121735309,121738062,121740833,121743611,121746356,121749045,121751765,121754471,121757018,121759789,121762576,121765335,121768110,121770874,121773658,121776432,121779226,121782024,121784776,121787572,121790363,121793136,121795929,121798721,121801522,121804319,121807101,121809857,121812584,121815353,121818172,121821000,121823813,121826616,121829414,121832173,121834994,121837819,121840644,121843460,121846282,121849106,121851935,121854768,121857592,121860435,121863274,121866099,121868942,121871777,121874626,121877474,121880341,121883197,121886056,121888913,121891736,121894595,121897466,121900335,121903194,121906045,121908897,121911614,121914434,121917310,121920187,121923051,121925909,121928778,121931650,121934523,121937401,121940303,121943191,121946073,121948960,121951860,121954759,121957664,121960577,121963486,121966387,121969160,121972035,121974849,121977736,121980635,121983357,121986249,121989158,121992052,121994951,121997879,122000801,122003682,122006594,122009503,122012410,122015314,122018238,122021163,122024085,122027001,122029931,122032850,122035747,122038676,122041617,122044531,122047453,122050380,122053301,122056207,122059114,122062048,122064899,122067793,122070628,122073304,122076154,122079076,122081872],"iss":[0,2659,5324,7987,10654,13319,15982,18650,21326,24006,26679,29356,32029,34701,37377,40061,42742,45424,48106,50785,53458,56134,58804,61465,64128,66793,69453,72120,74787,77456,80128,82800,85471,88134,90806,93474,96148,98825,101505,104183,106857,109534,112208,114878,117552,120228,122889,125558,128222,130892,133568,136246,138922,141595,144271,146941,149614,152287,154962,157636,160310,162992,165663,168336,171015,173673,176353,179025,181698,184369,187040,189715,192393,195014,197683,200353,203027,205702,208376,211053,213731,216408,219086,221759,224425,227092,229765,232439,235111,237783,240455,243126,245805,248482,251155,253830,256505,259168,261840,264506,267179,269848,272522,275193,277863,280530,283199,285868,288528,291186,293853,296516,299186,301849,304511,307168,309819,312485,315157,317831,320502,323163,325826,328492,331158,333827,336502,339179,341850,344523,347197,349873,352539,355214,357887,360557,363230,365896,368570,371236,373911,376575,379246,381911,384578,387249,389913,392583,395252,397914,400581,403248,405916,408584,411259,413929,416603,419257,421661,424262,426908,429567,432224,434880,437520,440178,442825,445495,448176,450852,453531,456211,458886,461562,464244,466928,469606,472283,474963,477642,480325,483008,485693,488377,491055,493744,496434,499123,501812,504497,507184,509868,512554,515240,517932,520615,523303,525984,528666,531363,534065,536770,539468,542175,544883,547587,550291,552994,555696,558407,561121,563838,566553,569269,571982,574703,577427,580151,582871,585595,588310,591021,593741,596459,599133,601849,604570,607290,610019,612746,615475,618209,620939,623671,626401,629133,631872,634618,637362,640106,642846,645589,648328,651073,653808,656552,659298,662042,664785,667530,670261,673001,675743,678489,681238,683992,686748,689514,692283,695060,697820,700568,703316,706089,708851,711621,714397,717165,719938,722715,725495,728285,731076,733875,736675,739468,742259,745055,747854,750659,753468,756278,759086,761899,764712,767526,770337,773151,775966,778782,781597,784414,787235,790055,792876,795703,798521,801338,804159,806980,809802,812629,815453,818270,821084,823890,826698,829508,832313,835115,837924,840725,843530,846335,849138,851941,854737,857541,860343,863152,865960,868770,871580,874396,877211,880030,882845,885658,888475,891296,894120,896950,899779,902609,905434,908253,911072,913895,916717,919537,922356,925171,927987,930807,933632,936462,939288,942121,944947,947776,950606,953438,956276,959114,961955,964794,967626,970461,973305,976147,978987,981838,984690,987535,990385,993238,996093,998948,1001797,1004649,1007501,1010353,1013212,1016071,1018933,1021789,1024656,1027519,1030385,1033255,1036129,1039007,1041887,1044765,1047635,1050515,1053399,1056289,1059177,1062053,1064944,1067840,1070741,1073640,1076539,1079444,1082342,1085236,1088127,1091022,1093924,1096824,1099728,1102636,1105541,1108440,1111361,1114276,1117185,1120099,1123024,1125948,1128868,1131795,1134724,1137652,1140587,1143520,1146454,1149384,1152317,1155249,1158185,1161123,1164063,1167002,1169946,1172888,1175829,1178772,1181713,1184658,1187606,1190553,1193499,1196448,1199401,1202358,1205309,1208268,1211231,1214190,1217151,1220113,1223077,1226042,1229010,1231967,1234925,1237870,1240813,1243760,1246708,1249656,1252607,1255566],"burn":[0,240,424,605,747,863,912,969,1181,1339,1669,2172,2704,2822,2950,3429,3765,4426,5332,5892,6023,6247,6516,6700,6862,6991,7070,7123,7176,7277,7535,7911,8308,8425,8486,8537,8612,8969,8862,8962,9096,9205,9284,9417,9643,9930,10223,10365,10414,10471,10552,10829,10747,10819,11130,11199,11278,11378,11477,11617,11718,11916,11956,11996,13098,13175,13275,13375,13456,13505,13541,13633,13722,13833,13898,14106,14024,14059,14280,14399,14486,15220,14859,14915,14948,15035,15098,15156,15427,15483,15533,15594,16090,16201,16300,16408,16494,16525,16561,16699,16822,16977,16962,19521,19869,19960,20041,20146,20234,20339,20558,20591,20637,20673,20737,20781,20822,20869,20892,20919,21030,21075,21142,21236,21282,21304,21333,21517,21962,22080,22440,22633,22667,22693,22763,22817,22869,22974,23089,23112,23150,23244,23320,23415,23556,23759,23783,23806,23852,23896,23922,23942,23967,23986,24004,24053,24086,24587,24216,24253,24276,24372,24457,24531,24586,24630,24667,24687,24706,24738,24758,24784,24809,24847,24861,24875,24892,24911,24927,24943,24964,24982,24996,25020,25042,25062,25079,25105,25135,25152,25180,25231,25255,25281,25301,25324,25338,25371,25405,25443,25486,25506,25521,25533,25559,25593,25649,25679,25712,25732,25755,25786,25813,25843,25942,26053,26398,26472,26575,26662,26740,27337,27607,27642,27673,27708,27735,27770,27833,27859,27877,27891,27907,27930,27955,27980,28003,28018,28033,28060,28086,28123,28152,28179,28203,28221,28262,28307,28354,28384,28418,28442,28457,28494,28525,28558,28588,28634,28648,28661,28714,28747,28786,28820,28848,28863,29015,29055,29079,29100,29125,29166,29187,29218,29254,29312,29357,29395,29428,29456,29483,29512,29547,29596,29624,29649,29670,29706,29742,29780,29810,29848,29999,30211,30427,30762,30877,31453,31860,31870,31959,32167,32526,32776,33003,33241,33339,33397,33443,33566,33616,33740,33932,34207,34256,34333,34513,34673,34707,34796,35048,35105,35152,35205,35249,35296,35374,35405,35439,35465,35500,35538,35584,35655,35727,35775,35816,35894,36027,36128,36239,36509,36553,36586,36652,36707,36769,36818,36870,36905,36937,37017,37059,37107,37174,37220,37261,37294,37342,37401,37485,37609,37692,37719,37740,37780,37833,37889,37979,38010,38037,38064,38106,38144,38183,38209,38243,38282,38305,38336,38385,38420,38465,38493,38515,38529,38556,38588,38620,38672,38704,38729,38762,38801,38849,38902,39082,39157,39172,39190,39227,39270,39304,39340,39373,39394,39413,39440,39467,39494,39519,39544,39560,39573,39593,39620,39782,39840,39961,40003,40036,40248,40291,40320,40366,40406,40422,40443,40502,40533,40565,40603,40647,40670,40692,40718,40755,40782,40814,40876,40910,40928,40975,41015,41052,41096,41158,41209,41233,41327,41375,41487,41760,41858,41886,42049],"prs":[[15,"2025-07-14","2025-07-14","7:45am ET",163142,3072.67,"",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-now-holds-approximately-500-million-of-ethereum-to-advance-its-ethereum-treasury-strategy-302504282.html",""],[18,"2025-07-17","2025-07-17","3:45am ET",300657,3461.89,"",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-now-holds-approximately-1-billion-of-ethereum1-to-advance-its-ethereum-treasury-strategy-302507907.html",""],[24,"2025-07-24","2025-07-23","11:59pm ET",566776,3643.752,"",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-eth-holdings-exceed-2-billion-of-ethereum-to-advance-its-ethereum-treasury-strategy-302513073.html",""],[29,"2025-07-29","2025-07-28","10:45pm ET",625000,3755.0,"",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-1-billion-stock-repurchase-program-302515955.html",""],[35,"2025-08-04","2025-08-03","6:30pm ET",833137,3491.86,"",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-eth-holdings-exceed-833-000-tokens-valued-in-excess-of-2-9-billion-and-largest-eth-treasury-in-world-302520506.html",""],[42,"2025-08-11","2025-08-10","10:59pm ET",1150263,4311.0,"",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-eth-holdings-exceed-1-15-million-tokens-valued-in-excess-of-4-96-billion-and-largest-eth-treasury-in-world-302526216.html",""],[49,"2025-08-18","2025-08-17","11:59pm ET",1523373,4326.0,"",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-is-the-1-eth-treasury-in-the-world-now-2nd-largest-crypto-treasury-globally-and-the-10th-most-liquid-us-stock-trading-6-4-billion-per-day-on-average-302531968.html",""],[56,"2025-08-25","2025-08-24","5:30pm ET",1713899,4808.0,"",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-reigns-as-the-1-eth-treasury-in-the-world-2nd-largest-crypto-treasury-globally-and-the-20th-most-liquid-us-stock-trading-2-8-billion-per-day-on-average-302537388.html",""],[59,"2025-08-28","2025-08-27","5:00pm ET",1792690,4591.0,"",null,"https://www.prnewswire.com/news-releases/david-sharbutt-to-join-bitmine-bmnr-board-of-directors-302540618.html",""],[63,"2025-09-02","2025-08-31","5:00pm ET",1866974,4458.0,"",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-release-of-august-investor-presentation-and-latest-video-message-from-tom-lee-chairman-302543446.html",""],[70,"2025-09-08","2025-09-07","8:30pm ET",2069443,4312.0,"",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-eth-holdings-exceed-2-069-million-reigning-as-the-1-eth-treasury-in-the-world-2nd-largest-crypto-treasury-globally-302548699.html",""],[77,"2025-09-15","2025-09-14","6:00pm ET",2151676,4632.0,"",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-crypto-and-cash-holdings-of-10-8-billion-eth-holdings-exceeding-2-151-million-302556218.html",""],[84,"2025-09-22","2025-09-21","4:00pm ET",2416054,4497.0,"greater than 2%",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-eth-holdings-exceed-2-of-ethereum-network-with-eth-holdings-exceeding-2-4-million-tokens-and-total-crypto-and-cash-holdings-of-11-4-billion-302562794.html",""],[91,"2025-09-29","2025-09-28","7:00pm ET",2650900,4141.0,"greater than 2%",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-eth-holdings-exceeding-2-65-million-tokens-and-total-crypto-and-cash-holdings-of-11-6-billion-302569157.html",""],[98,"2025-10-06","2025-10-05","1:00pm ET",2830151,4535.0,"greater than 2%",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-eth-holdings-exceeding-2-83-million-tokens-and-total-crypto-and-cash-holdings-of-13-4-billion-302575490.html",""],[105,"2025-10-13","2025-10-12","6:00pm ET",3032188,4154.0,"greater than 2.5%",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-eth-holdings-exceeding-3-03-million-tokens-and-total-crypto-and-cash-holdings-of-12-9-billion-302581550.html",""],[112,"2025-10-20","2025-10-19","6:30pm ET",3236014,4022.0,"2.7%",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-eth-holdings-reaching-3-24-million-tokens-and-total-crypto-and-cash-holdings-of-13-4-billion-302588585.html",""],[119,"2025-10-27","2025-10-26","7:00pm ET",3313069,4164.0,"2.8%",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-eth-holdings-exceeding-3-31-million-tokens-and-total-crypto-and-cash-holdings-of-14-2-billion-302594857.html",""],[126,"2025-11-03","2025-11-02","7:00pm ET",3395422,3903.0,"2.8%",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-eth-holdings-reaching-3-4-million-tokens-and-total-crypto-and-cash-holdings-of-13-7-billion-302602189.html",""],[133,"2025-11-10","2025-11-09","8:00pm ET",3505723,3639.0,"2.9%",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-eth-holdings-reaching-3-5-million-tokens-and-total-crypto-and-cash-holdings-of-13-2-billion-302609944.html",""],[140,"2025-11-17","2025-11-16","7:30pm ET",3559879,3120.0,"2.9%",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-eth-holdings-reaching-3-6-million-tokens-and-release-of-november-chairmans-message-302617138.html",""],[147,"2025-11-24","2025-11-23","7:30pm ET",3629701,2840.0,"3.0%",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-eth-holdings-reach-3-63-million-tokens-and-total-crypto-and-cash-holdings-of-11-2-billion-302624262.html",""],[154,"2025-12-01","2025-11-30","6:30pm ET",3726499,3008.0,"more than 3.0%",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-eth-holdings-reach-3-73-million-tokens-and-total-crypto-and-cash-holdings-of-12-1-billion-302628921.html",""],[161,"2025-12-08","2025-12-07","4:00pm ET",3864951,3139.0,"more than 3.2%",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-eth-holdings-exceed-3-86-million-tokens-and-total-crypto-and-total-cash-holdings-of-13-2-billion-302635031.html",""],[168,"2025-12-15","2025-12-14","6:00pm ET",3967210,3074.0,"more than 3.2%",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-eth-holdings-reach-3-97-million-tokens-and-total-crypto-and-total-cash-holdings-of-13-3-billion-302641888.html",""],[175,"2025-12-22","2025-12-21","3:00pm ET",4066062,2991.0,"3.37%",null,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-eth-holdings-reach-4-066-million-tokens-and-total-crypto-and-total-cash-holdings-of-13-2-billion-302647727.html","120.7M"],[182,"2025-12-29","2025-12-28","6:00pm ET",4110525,2948.0,"3.41%",408627,"https://www.prnewswire.com/news-releases/bitmine-immersion-bmnr-announces-eth-holdings-reach-4-11-million-tokens-and-total-crypto-and-total-cash-holdings-of-13-2-billion-302650000.html","120.7M"],[189,"2026-01-05","2026-01-04","9:00pm ET",4143502,3196.0,"3.43%",659219,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-144-million-tokens-and-total-crypto-and-total-cash-holdings-of-14-2-billion-302652341.html","120.7M"],[196,"2026-01-12","2026-01-11","7:00pm ET",4167768,3119.0,"3.45%",1256083,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-168-million-tokens-and-total-crypto-and-total-cash-holdings-of-14-0-billion-302658171.html","120.7M"],[204,"2026-01-20","2026-01-19","5:00pm ET",4203036,3211.0,"3.48%",1838003,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-203-million-tokens-and-total-crypto-and-total-cash-holdings-of-14-5-billion-302665064.html","120.7M"],[210,"2026-01-26","2026-01-25","8:00pm ET",4243338,2839.0,"3.52%",2009267,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-243-million-tokens-and-total-crypto-and-total-cash-holdings-of-12-8-billion-302669744.html","120.7M"],[217,"2026-02-02","2026-02-01","6:00pm ET",4285125,2317.0,"3.55%",2897459,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-285-million-tokens-and-total-crypto-and-total-cash-holdings-of-10-7-billion-302676048.html","120.7M"],[224,"2026-02-09","2026-02-08","3:00pm ET",4325738,2125.0,"3.58%",2897459,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-326-million-tokens-and-total-crypto-and-total-cash-holdings-of-10-0-billion-302682272.html","120.7M"],[232,"2026-02-17","2026-02-16","5:00pm ET",4371497,1998.0,"3.62%",3040483,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-371-million-tokens-and-total-crypto-and-total-cash-holdings-of-9-6-billion-302689296.html","120.7M"],[238,"2026-02-23","2026-02-22","6:00pm ET",4422659,1958.0,"3.66%",3040483,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-423-million-tokens-and-total-crypto-and-total-cash-holdings-of-9-6-billion-302694282.html","120.7M"],[245,"2026-03-02","2026-03-01","2:00pm ET",4473587,1976.0,"3.71%",3040483,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-474-million-tokens-and-total-crypto-and-total-cash-holdings-of-9-9-billion-302700582.html","120.7M"],[252,"2026-03-09","2026-03-08","4:00pm ET",4534563,1965.0,"3.76%",3040483,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-535-million-tokens-and-total-crypto-and-total-cash-holdings-of-10-3-billion-302708118.html","120.7M"],[259,"2026-03-16","2026-03-15","7:00pm ET",4595562,2185.0,"3.81%",3040515,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-596-million-tokens-and-total-crypto-and-total-cash-holdings-of-11-5-billion-302714219.html","120.7M"],[266,"2026-03-23","2026-03-22","3:00pm ET",4660903,2072.0,"3.86%",3142643,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-661-million-tokens-and-total-crypto-and-total-cash-holdings-of-11-0-billion-302721764.html","120.7M"],[273,"2026-03-30","2026-03-29","6:00pm ET",4732082,2005.0,"3.92%",3142643,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-732-million-tokens-and-total-crypto-and-total-cash-holdings-of-10-7-billion-302728176.html","120.7M"],[280,"2026-04-06","2026-04-05","8:30pm ET",4803334,2123.0,"3.98%",3334637,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-803-million-tokens-and-total-crypto-and-total-cash-holdings-of-11-4-billion-302734414.html","120.7M"],[287,"2026-04-13","2026-04-12","3:30pm ET",4874858,2206.0,"4.04%",3334637,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-875-million-tokens-and-total-crypto-and-total-cash-holdings-of-11-8-billion-302740122.html","120.7M"],[294,"2026-04-20","2026-04-19","4:00pm ET",4976485,2301.0,"4.12%",3334637,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-4-976-million-tokens-and-total-crypto-and-total-cash-holdings-of-12-9-billion-302746944.html","120.7M"],[301,"2026-04-27","2026-04-26","4:00pm ET",5078386,2369.0,"4.21%",3701589,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-unprecedented-world-record-of-5-078-million-tokens-and-total-crypto-and-total-cash-holdings-of-13-3-billion-302753891.html","120.7M"],[308,"2026-05-04","2026-05-03","4:30pm ET",5180131,2336.0,"4.29%",4362757,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-18-million-tokens-and-total-crypto-and-total-cash-holdings-of-13-1-billion-302760926.html","120.7M"],[315,"2026-05-11","2026-05-10","4:00pm ET",5206790,2366.0,"4.31%",4712917,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-21-million-tokens-and-total-crypto-and-total-cash-holdings-of-13-4-billion-302767816.html","120.7M"],[322,"2026-05-18","2026-05-17","4:00pm ET",5278462,2191.0,"4.37%",4712917,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-28-million-tokens-and-total-crypto-and-total-cash-holdings-of-12-6-billion-302774396.html","120.7M"],[330,"2026-05-26","2026-05-25","1:00pm ET",5390404,2134.0,"4.47%",4712917,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-39-million-tokens-and-total-crypto-and-total-cash-holdings-of-12-3-billion-302781471.html","120.7M"],[336,"2026-06-01","2026-05-31","2:00pm ET",5416901,2003.0,"4.49%",4718677,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-42-million-tokens-and-total-crypto-and-total-cash-holdings-of-11-6-billion-302786720.html","120.7M"],[343,"2026-06-08","2026-06-07","3:00pm ET",5543872,1630.0,"4.59%",4718677,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-54-million-tokens-and-total-crypto-and-total-cash-holdings-of-9-6-billion-302793756.html","120.7M"],[350,"2026-06-15","2026-06-14","6:00pm ET",5620754,1718.0,"4.66%",4718677,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-62-million-tokens-and-total-crypto-and-total-cash-holdings-of-10-4-billion-302799963.html","120.7M"],[357,"2026-06-22","2026-06-21","3:00pm ET",5672956,1733.0,"4.7%",4718677,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-67-million-tokens-and-total-crypto-and-total-cash-holdings-of-10-7-billion-302805995.html","120.7M"],[364,"2026-06-29","2026-06-28","3:00pm ET",5700040,1569.0,"4.7%",4879157,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-70-million-tokens-and-total-crypto-and-total-cash-holdings-of-9-8-billion-302812787.html","120.7M"],[371,"2026-07-06","2026-07-05","6:30pm ET",5742237,1800.0,"4.8%",4879157,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-74-million-tokens-and-total-crypto-and-total-cash-holdings-of-11-1-billion-302818093.html","120.7M"],[378,"2026-07-13","2026-07-12","5:00pm ET",5770038,1820.0,"4.8%",4917189,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-77-million-tokens-and-total-crypto-and-total-cash-holdings-of-11-3-billion-302823523.html","120.7M"],[385,"2026-07-20","2026-07-19","8:30pm ET",5777468,1879.0,"4.8%",4917189,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-78-million-tokens-and-total-crypto-and-total-cash-holdings-of-11-5-billion-302829332.html","120.7M"],[392,"2026-07-27","2026-07-26","7:00pm ET",5787414,1948.0,"4.8%",4917189,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-79-million-tokens-and-total-crypto-and-total-cash-holdings-of-11-8-billion-302834876.html","120.7M"],[399,"2026-08-03","2026-08-02","4:00pm ET",5797813,1880.0,"4.8%",4917189,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-8-million-tokens-and-total-crypto-and-total-cash-holdings-of-11-3-billion-302840749.html","120.7M"],[406,"2026-08-10","2026-08-09","6:30pm ET",5805238,1928.0,"4.8%",5067309,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-81-million-tokens-and-total-crypto-and-total-cash-holdings-of-11-6-billion-302846858.html","120.7M"],[413,"2026-08-17","2026-08-16","9:30pm ET",5815164,1893.0,"4.8%",5067309,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-82-million-tokens-and-total-crypto-and-total-cash-holdings-of-11-4-billion-302852583.html","120.7M"],[420,"2026-08-24","2026-08-23","2:00pm ET",5847611,2440.0,"4.8%",5067309,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-85-million-tokens-and-total-crypto-and-total-cash-holdings-of-14-9-billion-302857967.html","120.7M"],[427,"2026-08-31","2026-08-30","3:00pm ET",5901112,2511.0,"4.9%",5067309,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-90-million-tokens-and-total-crypto-and-total-cash-holdings-of-15-6-billion-302864579.html","120.7M"],[435,"2026-09-08","2026-09-07","2:00pm ET",5929198,2495.0,"4.9%",5067309,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-93-million-tokens-and-total-crypto-and-total-cash-holdings-of-15-7-billion-302871960.html","122.0M"],[441,"2026-09-14","2026-09-13","5:30pm ET",5956378,2513.0,"4.9%",5067309,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-96-million-tokens-and-total-crypto-and-total-cash-holdings-of-15-8-billion-302877149.html","122.0M"],[448,"2026-09-21","2026-09-20","9:00pm ET",5983940,2688.0,"4.9%",5067309,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-5-98-million-tokens-and-total-crypto-and-total-cash-holdings-of-17-1-billion-302884434.html","122.1M"],[455,"2026-09-28","2026-09-27","3:00pm ET",6001302,2698.0,"4.9%",5067309,"https://www.prnewswire.com/news-releases/bitmine-immersion-technologies-bmnr-announces-eth-holdings-reach-over-6-million-tokens-with-total-crypto-cash--marketable-securities-holdings-of-17-2-billion-302891056.html","122.1M"]],"long":{"start":"2021-08-01","step":7,"v":[117134286,117220027,117288288,117364717,117410658,117436914,117467279,117525857,117582100,117632125,117661732,117699183,117750395,117757786,117772011,117782678,117803146,117827032,117850860,117900318,117953541,118013495,118054805,118073604,118067846,118082248,118101747,118133558,118185106,118243486,118302954,118374151,118458829,118538078,118616882,118685095,118750676,118830011,118904322,118909799,118982496,119032209,119118023,119200088,119267564,119332828,119399103,119469631,119545770,119634972,119724024,119816682,119911955,120010163,120103747,120200037,120295977,120389705,120481582,120526444,120531736,120534630,120534766,120530978,120525855,120526305,120526936,120518232,120519158,120522604,120525880,120525314,120525652,120527935,120529017,120527806,120523998,120521319,120519525,120514490,120507670,120494932,120485602,120479454,120463103,120457837,120456090,120449480,120442607,120436033,120413581,120397788,120338816,120295124,120273351,120258844,120247557,120242967,120243097,120244117,120242874,120235252,120233003,120229561,120223408,120222996,120223119,120220076,120219764,120219656,120224211,120228127,120234636,120242503,120251536,120262176,120271051,120271953,120271585,120263034,120255567,120247659,120235729,120218301,120200548,120186585,120186713,120186924,120183534,120180640,120185076,120185972,120172746,120168745,120158617,120136404,120101356,120082553,120077987,120074203,120073200,120072241,120081156,120091411,120102715,120116377,120129649,120139842,120148647,120157209,120167465,120180373,120194744,120202282,120217155,120229445,120244599,120258843,120269531,120285549,120302704,120319689,120335341,120351107,120361033,120367243,120378389,120384135,120390391,120402548,120414246,120422996,120423097,120431589,120440958,120443691,120448636,120455292,120468611,120477921,120490434,120498707,120507083,120521454,120534867,120551705,120567755,120584050,120601080,120617931,120635535,120653202,120670477,120686743,120704260,120721164,120738734,120753792,120769545,120786094,120802068,120818230,120834677,120851841,120868355,120886037,120902783,120918242,120935966,120953292,120971279,120988776,121006692,121024695,121041855,121059998,121077832,121095887,121113634,121128925,121146904,121165267,121183525,121200876,121219116,121237133,121255610,121273550,121291826,121310408,121329052,121347701,121366320,121384997,121403720,121422034,121439815,121458673,121477684,121496686,121515640,121534754,121553737,121573012,121592340,121611800,121630804,121648817,121667224,121685963,121704783,121724186,121743611,121762576,121782024,121801522,121821000,121840644,121860435,121880341,121900335,121920187,121940303,121960577,121980635,122000801,122021163,122041617,122062048,122081872]},"ledger":{"crowdsale":60000000,"genesisOther":12009990.5,"powBlock":47223894.59,"powUncle":3139986.13,"pos":4345082.87,"burnt":4634271.36,"total":122084682.73,"asOf":"2026-09-28","source":"https://etherscan.io/stat/supply"}};
+const $ = id => document.getElementById(id);
+const K = DATA.supply.length - 1;
+const DAY = 864e5, TAU = Math.PI * 2;
+const BASE = Date.parse(DATA.base + 'T00:00:00Z');
+const dateOf = k => new Date(BASE + k * DAY);
+const isoD = s => new Date(Date.parse(s + 'T00:00:00Z'));
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const dLong = d => `${MON[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+const dHud = d => `${MON[d.getUTCMonth()].toUpperCase()} ${String(d.getUTCDate()).padStart(2, '0')} ${d.getUTCFullYear()}`;
+const dMY = d => `${MON[d.getUTCMonth()]} ’${String(d.getUTCFullYear()).slice(2)}`;
+const NF = new Intl.NumberFormat('en-US');
+const fmt = v => NF.format(Math.round(v));
+const sgn = v => (v < 0 ? '−' : '+') + NF.format(Math.abs(Math.round(v)));
+const pct = (v, d = 2) => (v * 100).toFixed(d) + '%';
+const mil = (v, d = 2) => (v / 1e6).toFixed(d) + 'M';
+const axisFmt = v => { const a = Math.abs(v), s = v < 0 ? '−' : ''; if (a >= 1e6) return s + (+(a / 1e6).toFixed(2)) + 'M'; if (a >= 1e3) return s + (+(a / 1e3).toFixed(1)) + 'K'; return s + a; };
+const reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+/* ---------- derived data ---------- */
+const PR = DATA.prs.map((p, i, a) => ({ k: p[0], pr: p[1], asof: p[2], eth: p[4], px: p[5], stated: p[6], staked: p[7], url: p[8], denom: p[9], prevK: i ? a[i - 1][0] : 0, add: p[4] - (i ? a[i - 1][4] : 0) }));
+PR.forEach(p => { p.supply = DATA.supply[p.k]; p.share = p.eth / p.supply; p.netNew = DATA.supply[p.k] - DATA.supply[p.prevK]; });
+const LAST = PR[PR.length - 1];
+const S0 = DATA.supply[0], SE = DATA.supply[K], ISS = DATA.iss[K], BRN = DATA.burn[K], NET = SE - S0;
+const holdAt = new Float64Array(K + 1), prAt = new Int32Array(K + 1);
+for (let k = 0, j = -1; k <= K; k++) { while (j + 1 < PR.length && PR[j + 1].k <= k) j++; prAt[k] = j; holdAt[k] = j >= 0 ? PR[j].eth : 0; }
+const PEAK = PR.reduce((a, b) => (b.add > a.add ? b : a));
+const SHORT = PR.slice(1).filter(p => p.add <= p.netNew);
+const LG = DATA.ledger;
+
+const shortText = (() => {
+  if (!SHORT.length) return 'none of them';
+  const ds = SHORT.map(p => dateOf(p.k)), yrs = new Set(ds.map(d => d.getUTCFullYear()));
+  if (yrs.size === 1) { const md = ds.map(d => `${MON[d.getUTCMonth()]} ${d.getUTCDate()}`), last = md.pop(); return (md.length ? md.join(', ') + ' and ' + last : last) + ', ' + [...yrs][0]; }
+  return ds.map(dLong).join('; ');
+})();
+const share = LAST.eth / SE;
+const BIND = {
+  asof: dLong(dateOf(K)), released: dLong(isoD(LAST.pr)), releases: String(PR.length),
+  share: pct(share, 2), bm: fmt(LAST.eth), net: fmt(NET), iss: fmt(ISS), brn: fmt(BRN), s0: fmt(S0), se: fmt(SE),
+  mult: (LAST.eth / NET).toFixed(1) + '×', ratio: String(Math.round(ISS / Math.max(1, BRN))),
+  dots: fmt(Math.round(SE / 1e4)), blocks: fmt(Math.round(LAST.eth / 1e4)),
+  beat: String(PR.length - 1 - SHORT.length), intervals: String(PR.length - 1), shortfalls: shortText,
+  peak: fmt(PEAK.add), peakdate: dLong(dateOf(PEAK.k)), weekly: fmt(NET / (K / 7)),
+  ring: share >= 0.05 ? 'has passed a full step' : `has filled ${Math.floor(share / 0.05 * 100)}% of one`,
+  totalWords: Math.floor(LG.total / 1e6) + ' million', ledgerPos: (LG.pos / 1e6).toFixed(2) + ' million',
+  ledgerBurn: (LG.burnt / 1e6).toFixed(2) + ' million', bmWords: (LAST.eth / 1e6).toFixed(2) + ' million',
+  ledgerAsof: dLong(isoD(LG.asOf)), s0M: (S0 / 1e6).toFixed(2) + ' million'
+};
+document.querySelectorAll('[data-bind]').forEach(el => { const v = BIND[el.dataset.bind]; if (v != null) el.textContent = v; });
+
+const EVENTS = (() => {
+  const ev = [[1, 'BitMine announces its ETH treasury strategy'], [PR[0].k, `First disclosure: ${fmt(PR[0].eth)} ETH`]];
+  for (let m = 1; m <= 40; m++) { const p = PR.find(q => q.eth >= m * 1e6); if (!p) break; ev.push([p.k, `${fmt(m * 1e6)} ETH stacked`]); }
+  for (let q = 1; q <= 20; q++) { const p = PR.find(r => r.share >= q / 100); if (!p) break; ev.push([p.k, `Passes ${q}% of all ETH`]); }
+  ev.push([PEAK.k, `Biggest week: +${fmt(PEAK.add)} ETH`]);
+  const mv = Math.round((Date.parse('2026-03-25T00:00:00Z') - BASE) / DAY);
+  if (mv > 0 && mv <= K) ev.push([mv, 'MAVAN, BitMine’s staking network, goes live']);
+  const m = new Map();
+  ev.forEach(([k, t]) => m.set(k, m.has(k) ? m.get(k) + ' · ' + t : t));
+  return m;
+})();
+
+/* ---------- time-lapse scene ---------- */
+const Scene = (() => {
+  const sec = $('obs'), cv = $('sky'), ctx = cv.getContext('2d'), viz = $('viz');
+  const orbCv = document.createElement('canvas'), octx = orbCv.getContext('2d');
+  const GA = Math.PI * (3 - Math.sqrt(5));
+  const N0 = Math.round(S0 / 1e4);
+  const ISS_MAX = Math.round(ISS / 1e4), BRN_MAX = Math.max(0, Math.round(BRN / 1e4));
+  const NMAX = N0 + Math.ceil(ISS_MAX * 1.3) + 60;
+  const STACK_MAX = Math.round(LAST.eth / 1e4), T5 = Math.ceil(0.05 * SE / 1e4);
+  const CAPN = Math.max(620, Math.ceil((Math.max(STACK_MAX, T5) + 12) / 20) * 20);
+  const ux = new Float32Array(NMAX), uy = new Float32Array(NMAX), ang = new Float64Array(NMAX), bucket = new Uint8Array(NMAX);
+  let seed = 20250630; const rnd = () => (seed = (seed * 48271) % 2147483647) / 2147483647;
+  for (let i = 0; i < NMAX; i++) { const r = Math.sqrt((i + 0.5) / NMAX), a = (i * GA) % TAU; ux[i] = r * Math.cos(a); uy[i] = r * Math.sin(a); ang[i] = a; bucket[i] = (rnd() * 4) | 0; }
+  const state = new Uint8Array(NMAX); // 0 empty · 1 ETH · 2 minted · 3 queued for BitMine
+  const lit = new Uint8Array(CAPN), litAt = new Float64Array(CAPN);
+  let wedge, issueO, burnO, L = null, W = 0, H = 0, dpr = 1, stars = [];
+  let stackN = 0, issN = 0, burnN = 0, flights = [], fx = [], orbDirty = true;
+  let t = K, kDone = K, playing = false, speed = 28, last = 0, raf = 0, inView = true, touched = false;
+  let disp = holdAt[K], hudK = -1, toastTimer = 0;
+  const ambient = !reduced;
+
+  const rel = (i, dir) => { let a = ((ang[i] - dir) % TAU + TAU) % TAU; return a > Math.PI ? a - TAU : a; };
+  function buildOrders(dir) {
+    const idx = Array.from({ length: N0 }, (_, i) => i), ra = new Float64Array(N0);
+    for (let i = 0; i < N0; i++) ra[i] = Math.abs(rel(i, dir));
+    idx.sort((a, b) => ra[a] - ra[b]);
+    wedge = Int32Array.from(idx.slice(0, CAPN + 40));
+    const iss = []; for (let i = N0; i < NMAX; i++) if (Math.abs(rel(i, dir)) > 0.24) iss.push(i);
+    issueO = Int32Array.from(iss);
+    let s = 424242; const r2 = () => (s = (s * 48271) % 2147483647) / 2147483647;
+    const b = [], seen = new Set(); let guard = 0;
+    while (b.length < BRN_MAX + 12 && guard++ < 200000) { const i = (r2() * N0) | 0; if (!seen.has(i) && Math.abs(rel(i, dir)) > 0.6 && ux[i] * ux[i] + uy[i] * uy[i] > 0.1) { seen.add(i); b.push(i); } }
+    burnO = Int32Array.from(b);
+  }
+
+  const viewK = () => Math.max(1, Math.min(K, Math.floor(t)));
+  function cellXY(j) {
+    if (L.wide) { const c = j % L.cols, r = (j / L.cols) | 0; return [L.vx + c * L.p, L.vy + L.vh - (r + 1) * L.p]; }
+    const c = (j / L.rows) | 0, r = j % L.rows; return [L.vx + c * L.p, L.vy + L.vh - (r + 1) * L.p];
+  }
+  function targetPos(k) { const tb = 0.05 * DATA.supply[k] / 1e4; return L.wide ? L.vy + L.vh - (tb / L.cols) * L.p : L.vx + (tb / L.rows) * L.p; }
+  function place(id, x, y, cls) { const e = $(id); e.style.left = x + 'px'; e.style.top = y + 'px'; e.classList.toggle('rt', cls === 'rt'); }
+  function placeFive(k) { if (L.wide) place('lab-5', L.vx - L.x - 16, targetPos(k) - L.y, 'rt'); else place('lab-5', targetPos(k) - L.x + 4, L.vy - L.y - 16, 'rt'); }
+  function placeLabels() {
+    if (L.wide) { place('lab-orb', L.cx - L.x, L.cy - L.y + L.R + 32); place('lab-vault', L.vx - L.x + (L.vw - (L.p - L.blk)) / 2, L.vy - L.y - 24); }
+    else { place('lab-orb', L.cx - L.x, 52); place('lab-vault', L.vx - L.x + L.vw / 2, L.vy - L.y + L.vh + 20); }
+    placeFive(viewK());
+  }
+
+  function layout() {
+    const wide = viz.getBoundingClientRect().width >= 720;
+    viz.classList.toggle('narrow', !wide);
+    const rs = sec.getBoundingClientRect(), vr = viz.getBoundingClientRect();
+    W = rs.width; H = rs.height; dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    const o = { wide, x: vr.left - rs.left, y: vr.top - rs.top, w: vr.width, h: vr.height };
+    if (wide) {
+      o.dir = 0; o.cols = 20; o.rows = Math.ceil(CAPN / 20);
+      o.R = Math.min(o.h * 0.4, o.w * 0.25);
+      o.cx = o.x + o.w * 0.35; o.cy = o.y + o.h * 0.5;
+      o.p = Math.max(6, Math.floor(Math.min(o.h * 0.8 / o.rows, o.w * 0.2 / o.cols)));
+      o.vw = o.cols * o.p; o.vh = o.rows * o.p;
+      o.vx = Math.round(o.x + o.w * 0.78 - o.vw / 2); o.vy = Math.round(o.cy - o.vh / 2);
+    } else {
+      o.dir = Math.PI / 2; o.rows = 12; o.cols = Math.ceil(CAPN / 12);
+      o.R = Math.min(o.w * 0.4, o.h * 0.3);
+      o.cx = o.x + o.w / 2; o.cy = o.y + 72 + o.R;
+      o.p = Math.max(3, Math.floor(o.w * 0.94 / o.cols));
+      o.vw = o.cols * o.p; o.vh = o.rows * o.p;
+      o.vx = Math.round(o.x + (o.w - o.vw) / 2); o.vy = Math.round(o.cy + o.R + 64);
+    }
+    o.dot = Math.max(1.1, Math.min(2.5, o.R / 108));
+    o.blk = o.p >= 8 ? o.p - 2 : o.p - 1;
+    const turn = !L || L.dir !== o.dir;
+    L = o;
+    if (turn) buildOrders(o.dir);
+    makeStars();
+    rebuild(kDone);
+    placeLabels();
+    kick();
+  }
+
+  function makeStars() {
+    stars = []; const n = Math.min(340, Math.round(W * H / 3800)); let s = 77;
+    const r = () => (s = (s * 48271) % 2147483647) / 2147483647;
+    for (let i = 0; i < n; i++) stars.push([r() * W, r() * H * 0.9, r(), r() * TAU, 0.4 + r() * 1.6]);
+  }
+
+  function rebuild(k) {
+    flights = []; fx = [];
+    state.fill(0); state.fill(1, 0, N0);
+    issN = Math.min(issueO.length, Math.round(DATA.iss[k] / 1e4)); for (let j = 0; j < issN; j++) state[issueO[j]] = 2;
+    burnN = Math.min(burnO.length, Math.max(0, Math.round(DATA.burn[k] / 1e4))); for (let j = 0; j < burnN; j++) state[burnO[j]] = 0;
+    stackN = Math.min(wedge.length, CAPN, Math.round(holdAt[k] / 1e4)); for (let j = 0; j < stackN; j++) state[wedge[j]] = 0;
+    lit.fill(0); lit.fill(1, 0, stackN); litAt.fill(-1e9);
+    kDone = k; orbDirty = true; disp = holdAt[k]; hudK = -1;
+  }
+
+  function stepDay(k, now) {
+    const tI = Math.min(issueO.length, Math.round(DATA.iss[k] / 1e4));
+    while (issN < tI) { const s = issueO[issN++]; state[s] = 2; if (!reduced) fx.push({ m: 0, s, t0: now }); orbDirty = true; }
+    const tB = Math.min(burnO.length, Math.max(0, Math.round(DATA.burn[k] / 1e4)));
+    while (burnN < tB) { const s = burnO[burnN++]; state[s] = 0; if (!reduced) fx.push({ m: 1, s, t0: now, a: Math.random() * TAU }); orbDirty = true; }
+    const tS = Math.min(wedge.length, CAPN, Math.round(holdAt[k] / 1e4)), n = tS - stackN;
+    if (n > 0) {
+      const gap = Math.min(45, 900 / n);
+      for (let j = 0; j < n; j++) {
+        const s = wedge[stackN];
+        if (reduced) { state[s] = 0; lit[stackN] = 1; }
+        else { state[s] = 3; flights.push({ s, c: stackN, t0: now + j * gap, d: 950 + Math.random() * 300, arc: Math.random(), go: false }); }
+        stackN++;
+      }
+      orbDirty = true;
+    }
+    const ev = EVENTS.get(k); if (ev) toast(k, ev);
+  }
+
+  function frame(now) {
+    raf = 0;
+    const dt = last ? Math.min(0.05, (now - last) / 1000) : 0; last = now;
+    if (playing) {
+      t = Math.min(K, t + dt * speed);
+      const kn = Math.floor(t);
+      while (kDone < kn) stepDay(++kDone, now);
+      if (t >= K) { playing = false; setBtn(); }
+    }
+    draw(now);
+    hud(dt);
+    const busy = playing || flights.length || fx.length || Math.abs(disp - holdAt[viewK()]) > 0.5;
+    if (busy || (ambient && inView && !document.hidden)) raf = requestAnimationFrame(frame); else last = 0;
+  }
+  function kick() { if (!raf) raf = requestAnimationFrame(frame); }
+
+  function draw(now) {
+    const c = ctx;
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.clearRect(0, 0, W, H);
+    drawStars(c, now);
+    drawTerrain(c, now);
+    drawRing(c);
+    if (orbDirty) { renderOrb(); orbDirty = false; }
+    const pad = 16;
+    c.drawImage(orbCv, L.cx - L.R - pad, L.cy - L.R - pad, (L.R + pad) * 2, (L.R + pad) * 2);
+    if (ambient) sparkle(c);
+    drawFx(c, now);
+    drawVault(c, now);
+    drawFlights(c, now);
+  }
+
+  function drawStars(c, now) {
+    const tt = now / 1000; c.fillStyle = '#DCD7FF';
+    for (const s of stars) {
+      const tw = ambient ? 0.55 + 0.45 * Math.sin(tt * s[4] + s[3]) : 0.8;
+      c.globalAlpha = (0.15 + 0.7 * s[2]) * tw;
+      const z = 0.6 + s[2] * 1.3; c.fillRect(s[0], s[1], z, z);
+    }
+    c.globalAlpha = 1;
+  }
+
+  const hash = n => { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); };
+  const vnoise = x => { const i = Math.floor(x), f = x - i, u = f * f * (3 - 2 * f); return hash(i) * (1 - u) + hash(i + 1) * u; };
+  const ridge = x => vnoise(x) * 0.6 + vnoise(x * 2.13 + 3.1) * 0.28 + vnoise(x * 4.71 + 7.7) * 0.12;
+  function drawTerrain(c, now) {
+    const top = L.y + L.h * 0.74, span = H - top; if (span < 40) return;
+    const off = ambient ? now / 1000 * 10 : 0, layers = 11, step = 12;
+    c.lineWidth = 1;
+    for (let j = 0; j < layers; j++) {
+      const f = j / (layers - 1), yb = top + Math.pow(f, 1.6) * span * 0.9 + 6, amp = 16 + f * 64, sc = 0.0065 - f * 0.003;
+      c.beginPath();
+      for (let x = -step; x <= W + step; x += step) {
+        const yy = yb - Math.pow(ridge((x + off * (0.25 + f * 1.2)) * sc + j * 17.3), 1.7) * amp;
+        if (x === -step) c.moveTo(x, yy); else c.lineTo(x, yy);
+      }
+      c.lineTo(W + step, H + 4); c.lineTo(-step, H + 4); c.closePath();
+      c.fillStyle = 'rgba(5,5,11,0.94)'; c.fill();
+      c.strokeStyle = `rgba(${Math.round(150 - 70 * f)},${Math.round(92 + 40 * f)},255,${(0.1 + 0.42 * f).toFixed(3)})`; c.stroke();
+    }
+  }
+
+  function drawRing(c) {
+    const R = L.R + 10, cx = L.cx, cy = L.cy, dir = L.dir;
+    c.save();
+    c.lineWidth = 1; c.strokeStyle = 'rgba(140,112,255,0.22)';
+    c.beginPath(); c.arc(cx, cy, R + 10, 0, TAU); c.stroke();
+    c.beginPath();
+    for (let i = 0; i < 20; i++) { const a = dir + Math.PI * 0.05 + i * Math.PI / 10; c.moveTo(cx + Math.cos(a) * (R + 6), cy + Math.sin(a) * (R + 6)); c.lineTo(cx + Math.cos(a) * (R + 14), cy + Math.sin(a) * (R + 14)); }
+    c.strokeStyle = 'rgba(168,150,255,0.45)'; c.stroke();
+    const g = c.createLinearGradient(cx - R, cy - R, cx + R, cy + R);
+    g.addColorStop(0, 'rgba(216,75,255,0.95)'); g.addColorStop(0.5, 'rgba(140,112,255,0.6)'); g.addColorStop(1, 'rgba(84,120,255,0.9)');
+    c.strokeStyle = g; c.lineWidth = 1.6; c.shadowColor = 'rgba(170,90,255,0.9)'; c.shadowBlur = 18;
+    c.beginPath(); c.arc(cx, cy, R, 0, TAU); c.stroke();
+    const half = disp / DATA.supply[viewK()] * Math.PI;
+    if (half > 0.0005) { c.strokeStyle = '#C6FF00'; c.lineWidth = 3.2; c.shadowColor = 'rgba(198,255,0,0.95)'; c.shadowBlur = 16; c.beginPath(); c.arc(cx, cy, R, dir - half, dir + half); c.stroke(); }
+    c.shadowBlur = 0; c.strokeStyle = 'rgba(198,255,0,0.6)'; c.lineWidth = 1.2; c.beginPath();
+    for (const s of [-1, 1]) { const a = dir + s * Math.PI * 0.05; c.moveTo(cx + Math.cos(a) * (R - 6), cy + Math.sin(a) * (R - 6)); c.lineTo(cx + Math.cos(a) * (R + 18), cy + Math.sin(a) * (R + 18)); }
+    c.stroke();
+    c.restore();
+  }
+
+  function renderOrb() {
+    const pad = 16, R = L.R, sz = (R + pad) * 2, px = Math.ceil(sz * dpr);
+    if (orbCv.width !== px) { orbCv.width = px; orbCv.height = px; }
+    const c = octx; c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, sz, sz);
+    const cx = R + pad, cy = R + pad, s = L.dot, so = s / 2, hs = s * 3.4, ho = hs / 2, ms = s * 1.4, mo = ms / 2, mh = ms * 3, mho = mh / 2;
+    const g = c.createRadialGradient(cx, cy, 0, cx, cy, R * 1.04);
+    g.addColorStop(0, 'rgba(140,112,255,0.16)'); g.addColorStop(0.7, 'rgba(140,112,255,0.05)'); g.addColorStop(1, 'rgba(140,112,255,0)');
+    c.fillStyle = g; c.beginPath(); c.arc(cx, cy, R * 1.04, 0, TAU); c.fill();
+    const halo = new Path2D(), B = [new Path2D(), new Path2D(), new Path2D(), new Path2D()], mint = new Path2D(), mintH = new Path2D(), q = new Path2D();
+    for (let i = 0; i < NMAX; i++) {
+      const st = state[i]; if (!st) continue;
+      const x = cx + ux[i] * R, y = cy + uy[i] * R;
+      if (st === 1) { halo.rect(x - ho, y - ho, hs, hs); B[bucket[i]].rect(x - so, y - so, s, s); }
+      else if (st === 2) { mintH.rect(x - mho, y - mho, mh, mh); mint.rect(x - mo, y - mo, ms, ms); }
+      else q.rect(x - mo, y - mo, ms, ms);
+    }
+    c.globalCompositeOperation = 'lighter';
+    c.fillStyle = 'rgba(140,112,255,0.045)'; c.fill(halo);
+    c.fillStyle = 'rgba(28,159,214,0.16)'; c.fill(mintH);
+    c.globalCompositeOperation = 'source-over';
+    const cols = ['rgba(140,112,255,0.40)', 'rgba(140,112,255,0.60)', 'rgba(164,144,255,0.80)', 'rgba(200,188,255,0.95)'];
+    for (let b = 0; b < 4; b++) { c.fillStyle = cols[b]; c.fill(B[b]); }
+    c.fillStyle = '#1C9FD6'; c.fill(mint);
+    c.fillStyle = '#C6FF00'; c.fill(q);
+  }
+
+  function sparkle(c) {
+    const R = L.R, s = L.dot * 1.5; c.fillStyle = '#EDE8FF';
+    for (let n = 0; n < 26; n++) { const i = (Math.random() * N0) | 0; if (state[i] !== 1) continue; c.globalAlpha = 0.25 + Math.random() * 0.6; c.fillRect(L.cx + ux[i] * R - s / 2, L.cy + uy[i] * R - s / 2, s, s); }
+    c.globalAlpha = 1;
+  }
+
+  function drawFx(c, now) {
+    if (!fx.length) return;
+    const R = L.R, keep = [];
+    c.save(); c.globalCompositeOperation = 'lighter';
+    for (const e of fx) {
+      const x = L.cx + ux[e.s] * R, y = L.cy + uy[e.s] * R, age = now - e.t0;
+      if (e.m === 0) {
+        const u = age / 900; if (u >= 1) continue; keep.push(e);
+        c.globalAlpha = 1 - u; c.strokeStyle = '#1C9FD6'; c.lineWidth = 1.5; c.beginPath(); c.arc(x, y, 2 + u * 16, 0, TAU); c.stroke();
+      } else {
+        const u = age / 1600; if (u >= 1) continue; keep.push(e);
+        c.globalAlpha = 1 - u; c.fillStyle = '#E8532F'; c.strokeStyle = '#E8532F';
+        const cs = L.dot * 2.6 * (1 + u); c.fillRect(x - cs / 2, y - cs / 2, cs, cs);
+        c.lineWidth = 1.5; c.beginPath(); c.arc(x, y, 3 + u * 30, 0, TAU); c.stroke();
+        for (let n = 0; n < 8; n++) { const an = e.a + n * TAU / 8, d = 5 + u * 34; c.fillRect(x + Math.cos(an) * d - 1, y + Math.sin(an) * d - 1, 2, 2); }
+      }
+    }
+    c.restore(); fx = keep;
+  }
+
+  function drawVault(c, now) {
+    const b = L.blk, g = L.p - b, x0 = L.vx - 7, y0 = L.vy - 7, x1 = L.vx + L.vw - g + 7, y1 = L.vy + L.vh - g + 7, bl = 10;
+    c.strokeStyle = 'rgba(198,255,0,0.45)'; c.lineWidth = 1; c.beginPath();
+    c.moveTo(x0, y0 + bl); c.lineTo(x0, y0); c.lineTo(x0 + bl, y0);
+    c.moveTo(x1 - bl, y0); c.lineTo(x1, y0); c.lineTo(x1, y0 + bl);
+    c.moveTo(x1, y1 - bl); c.lineTo(x1, y1); c.lineTo(x1 - bl, y1);
+    c.moveTo(x0 + bl, y1); c.lineTo(x0, y1); c.lineTo(x0, y1 - bl);
+    c.stroke();
+    const empty = new Path2D(), full = new Path2D();
+    for (let j = 0; j < CAPN; j++) { const p = cellXY(j); (lit[j] ? full : empty).rect(p[0], p[1], b, b); }
+    c.fillStyle = 'rgba(198,255,0,0.06)'; c.fill(empty);
+    c.save(); c.fillStyle = '#C6FF00'; c.shadowColor = 'rgba(198,255,0,0.6)'; c.shadowBlur = 8; c.fill(full); c.restore();
+    c.fillStyle = '#FFFFFF';
+    for (let j = 0; j < CAPN; j++) { const age = now - litAt[j]; if (age >= 0 && age < 500) { const p = cellXY(j); c.globalAlpha = 1 - age / 500; c.fillRect(p[0] - 1, p[1] - 1, b + 2, b + 2); } }
+    c.globalAlpha = 1;
+    const tp = targetPos(viewK());
+    c.strokeStyle = 'rgba(243,242,251,0.85)'; c.lineWidth = 1; c.beginPath();
+    if (L.wide) { c.moveTo(L.vx - 12, tp); c.lineTo(L.vx + L.vw - g + 12, tp); } else { c.moveTo(tp, L.vy - 10); c.lineTo(tp, L.vy + L.vh - g + 10); }
+    c.stroke();
+  }
+
+  function drawFlights(c, now) {
+    if (!flights.length) return;
+    const R = L.R, s = Math.max(2, L.dot * 1.7), keep = [];
+    c.save(); c.globalCompositeOperation = 'lighter';
+    for (const f of flights) {
+      if (now < f.t0) { keep.push(f); continue; }
+      if (!f.go) { f.go = true; state[f.s] = 0; orbDirty = true; }
+      const u = Math.min(1, (now - f.t0) / f.d), e = u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+      const x0 = L.cx + ux[f.s] * R, y0 = L.cy + uy[f.s] * R, cp = cellXY(f.c), x1 = cp[0] + L.blk / 2, y1 = cp[1] + L.blk / 2;
+      let qx, qy;
+      if (L.wide) { qx = (x0 + x1) / 2; qy = Math.min(y0, y1) - 50 - 110 * f.arc; }
+      else { qx = (x0 + x1) / 2 + (f.arc - 0.5) * 160; qy = (y0 + y1) / 2 - 20; }
+      for (let m = 7; m >= 0; m--) {
+        const ee = Math.max(0, e - m * 0.028), it = 1 - ee;
+        const px = it * it * x0 + 2 * it * ee * qx + ee * ee * x1, py = it * it * y0 + 2 * it * ee * qy + ee * ee * y1;
+        if (m) { c.globalAlpha = 0.55 * (1 - m / 8); c.fillStyle = '#C6FF00'; const z = s * (1 - m / 10); c.fillRect(px - z / 2, py - z / 2, z, z); }
+        else { c.globalAlpha = 1; c.fillStyle = '#F2FFC2'; const z = s * 1.3; c.fillRect(px - z / 2, py - z / 2, z, z); }
+      }
+      if (u >= 1) { lit[f.c] = 1; litAt[f.c] = now; } else keep.push(f);
+    }
+    c.restore(); flights = keep;
+  }
+
+  const HUD = { date: $('h-date'), wk: $('h-week'), bm: $('h-bm'), share: $('h-share'), add: $('h-add'), sup: $('h-sup'), iss: $('h-iss'), brn: $('h-brn') };
+  const scrub = $('scrub'), WEEKS = Math.ceil(K / 7);
+  scrub.max = K;
+  function hud(dt) {
+    const k = viewK(), target = holdAt[k];
+    if ((playing || flights.length) && dt > 0) { disp += (target - disp) * Math.min(1, dt * 5); if (Math.abs(target - disp) < 1) disp = target; } else disp = target;
+    HUD.bm.textContent = fmt(disp);
+    HUD.share.textContent = pct(disp / DATA.supply[k], 3);
+    if (k === hudK) return;
+    hudK = k;
+    HUD.date.textContent = dHud(dateOf(k));
+    HUD.wk.textContent = `Week ${Math.min(WEEKS, Math.max(1, Math.ceil(k / 7)))} of ${WEEKS}`;
+    HUD.sup.textContent = fmt(DATA.supply[k]);
+    HUD.iss.textContent = sgn(DATA.iss[k]);
+    HUD.brn.textContent = sgn(-DATA.burn[k]);
+    HUD.add.textContent = prAt[k] >= 0 ? sgn(PR[prAt[k]].add) : '—';
+    scrub.value = k;
+    scrub.style.setProperty('--p', ((k - 1) / (K - 1) * 100).toFixed(2) + '%');
+    placeFive(k);
+  }
+
+  const toastEl = $('toast');
+  function toast(k, text) {
+    const d = document.createElement('span'); d.className = 'td'; d.textContent = dHud(dateOf(k));
+    const x = document.createElement('span'); x.textContent = text;
+    toastEl.replaceChildren(d, x); toastEl.classList.add('on');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove('on'), speed > 10 ? 1600 : 2600);
+  }
+
+  const btn = $('play'), lbl = $('play-lbl'), icoPlay = $('ico-play'), icoPause = $('ico-pause');
+  function setBtn() {
+    icoPlay.toggleAttribute('hidden', playing); icoPause.toggleAttribute('hidden', !playing);
+    lbl.textContent = playing ? 'Pause' : (t >= K ? 'Replay from Jun 30, 2025' : 'Resume');
+  }
+  function start() { if (t >= K) { rebuild(0); t = 0; } playing = true; setBtn(); kick(); }
+  btn.addEventListener('click', () => { touched = true; if (playing) { playing = false; setBtn(); } else start(); });
+  scrub.addEventListener('input', () => { touched = true; playing = false; const k = +scrub.value; t = k; rebuild(k); setBtn(); kick(); });
+  document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+    speed = +b.dataset.speed;
+    document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  }));
+
+  const ticks = $('ticks');
+  for (let m = 1; m <= 40; m++) {
+    const p = PR.find(q => q.eth >= m * 1e6); if (!p) break;
+    const e = document.createElement('span'); e.className = 'tk'; e.textContent = m + 'M';
+    e.style.left = `calc(7px + (100% - 14px) * ${((p.k - 1) / (K - 1)).toFixed(4)})`;
+    ticks.appendChild(e);
+  }
+
+  new IntersectionObserver(es => { inView = es[0].isIntersecting; if (inView) kick(); }, { threshold: 0.02 }).observe(sec);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); });
+  let rt = 0; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(layout, 100); }).observe(sec);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => layout());
+  layout(); setBtn();
+  if (!reduced) setTimeout(() => { if (!touched && !document.hidden && inView) start(); }, 1800);
+})();
+
+/* ---------- charts ---------- */
+const tip = (() => {
+  const el = $('tip');
+  return {
+    show(cx, cy, title, rows) {
+      const t = document.createElement('div'); t.className = 't'; t.textContent = title;
+      const kids = [t];
+      for (const r of rows) {
+        const d = document.createElement('div'); d.className = 'r';
+        const l = document.createElement('span'); l.className = 'l';
+        if (r.c) { const i = document.createElement('i'); i.style.background = r.c; if (r.box) i.className = 'bx'; l.appendChild(i); }
+        l.appendChild(document.createTextNode(r.l));
+        const b = document.createElement('b'); b.textContent = r.v;
+        d.append(l, b); kids.push(d);
+      }
+      el.replaceChildren(...kids); el.classList.add('on');
+      const bw = el.offsetWidth, bh = el.offsetHeight;
+      let x = cx + 16, y = cy + 16;
+      if (x + bw > innerWidth - 8) x = cx - bw - 16;
+      if (y + bh > innerHeight - 8) y = cy - bh - 16;
+      el.style.left = Math.max(8, x) + 'px'; el.style.top = Math.max(8, y) + 'px';
+    },
+    hide() { el.classList.remove('on'); }
+  };
+})();
+
+function mk(id, w, h, label) {
+  const el = $(id); el.replaceChildren();
+  return d3.select(el).append('svg').attr('width', w).attr('height', h).attr('viewBox', `0 0 ${w} ${h}`).attr('role', 'img').attr('aria-label', label);
+}
+function yGrid(svg, y, x0, x1, ticks, f = axisFmt) {
+  const g = svg.append('g');
+  for (const v of ticks) {
+    const yy = Math.round(y(v)) + 0.5;
+    g.append('line').attr('class', v === 0 ? 'axis-line' : 'grid-line').attr('x1', x0).attr('x2', x1).attr('y1', yy).attr('y2', yy);
+    g.append('text').attr('class', 'tick').attr('x', x0 - 8).attr('y', yy).attr('dy', '0.32em').attr('text-anchor', 'end').text(f(v));
+  }
+}
+function xTimeTicks(svg, x, ty, interval, x0, x1, f = dMY) {
+  const g = svg.append('g');
+  for (const d of x.ticks(interval)) {
+    const px = x(d); if (px < x0 - 1 || px > x1 + 1) continue;
+    g.append('text').attr('class', 'tick').attr('x', px).attr('y', ty).attr('text-anchor', px - x0 < 24 ? 'start' : (x1 - px < 24 ? 'end' : 'middle')).text(f(d));
+  }
+}
+function bandMonths(svg, x, items, dateFn, ty, every) {
+  let lastM = -1;
+  items.forEach((it, i) => {
+    const d = dateFn(it), mi = d.getUTCFullYear() * 12 + d.getUTCMonth();
+    if (mi === lastM) return; lastM = mi;
+    if (d.getUTCMonth() % every) return;
+    svg.append('text').attr('class', 'tick').attr('x', x(i) + x.bandwidth() / 2).attr('y', ty).attr('text-anchor', 'middle').text(dMY(d));
+  });
+}
+function barPath(x, y0, w, y1, r) {
+  const hgt = Math.abs(y1 - y0); r = Math.max(0, Math.min(r, w / 2, hgt));
+  if (y1 <= y0) return `M${x},${y0}V${y1 + r}Q${x},${y1} ${x + r},${y1}H${x + w - r}Q${x + w},${y1} ${x + w},${y1 + r}V${y0}Z`;
+  return `M${x},${y0}V${y1 - r}Q${x},${y1} ${x + r},${y1}H${x + w - r}Q${x + w},${y1} ${x + w},${y1 - r}V${y0}Z`;
+}
+function endLabel(svg, x, y, name, val, anchor = 'start') {
+  const t = svg.append('text').attr('x', x).attr('y', y).attr('text-anchor', anchor);
+  t.append('tspan').attr('class', 'lbl-2').attr('x', x).attr('dy', '-0.35em').text(name);
+  t.append('tspan').attr('class', 'lbl').attr('x', x).attr('dy', '1.3em').text(val);
+}
+function keyNav(node, count, getCur, show) {
+  node.setAttribute('tabindex', '0');
+  node.addEventListener('keydown', ev => {
+    let i = getCur(); if (i < 0) i = count - 1;
+    if (ev.key === 'ArrowLeft') i = Math.max(0, i - 1);
+    else if (ev.key === 'ArrowRight') i = Math.min(count - 1, i + 1);
+    else if (ev.key === 'Home') i = 0;
+    else if (ev.key === 'End') i = count - 1;
+    else return;
+    ev.preventDefault(); show(i, true);
+  });
+  node.addEventListener('focus', () => { if (getCur() < 0) show(count - 1, true); });
+}
+function crosshair(svg, box, keys, xOfKey, info) {
+  const node = svg.node(), g = svg.append('g').style('display', 'none').attr('pointer-events', 'none');
+  const ln = g.append('line').attr('class', 'cross').attr('y1', box.y0).attr('y2', box.y1), dg = g.append('g');
+  let cur = -1;
+  const hide = () => { g.style('display', 'none'); tip.hide(); cur = -1; };
+  function show(i, kb, ev) {
+    cur = i; const key = keys[i], px = xOfKey(key), inf = info(key);
+    g.style('display', null); ln.attr('x1', px).attr('x2', px);
+    dg.selectAll('circle').data(inf.marks).join('circle').attr('class', 'mk').attr('cx', px).attr('cy', d => d.y).attr('r', 4.5).style('fill', d => d.c);
+    if (kb) { const r = node.getBoundingClientRect(); tip.show(r.left + px, r.top + box.y0 + 8, inf.title, inf.rows); }
+    else tip.show(ev.clientX, ev.clientY, inf.title, inf.rows);
+  }
+  const nearest = px => { let lo = 0, hi = keys.length - 1; while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (xOfKey(keys[mid]) < px) lo = mid; else hi = mid; } return px - xOfKey(keys[lo]) < xOfKey(keys[hi]) - px ? lo : hi; };
+  svg.append('rect').attr('class', 'hit').attr('x', box.x0).attr('y', box.y0).attr('width', box.x1 - box.x0).attr('height', box.y1 - box.y0)
+    .on('pointermove', ev => show(nearest(d3.pointer(ev, node)[0]), false, ev)).on('pointerleave', hide);
+  keyNav(node, keys.length, () => cur, show);
+  node.addEventListener('blur', hide);
+}
+function barHover(svg, items, xOf, step, box, info, marks) {
+  const node = svg.node(); let cur = -1;
+  const hide = () => { marks.classed('lift', false); tip.hide(); cur = -1; };
+  function show(i, kb, ev) {
+    cur = i; const it = items[i], inf = info(it);
+    marks.classed('lift', d => d === it);
+    if (kb) { const r = node.getBoundingClientRect(); tip.show(r.left + xOf(i) + step / 2, r.top + box.y0 + 8, inf.title, inf.rows); }
+    else tip.show(ev.clientX, ev.clientY, inf.title, inf.rows);
+  }
+  svg.append('g').selectAll('rect').data(items).join('rect').attr('class', 'hit')
+    .attr('x', (d, i) => xOf(i)).attr('width', step).attr('y', box.y0).attr('height', box.y1 - box.y0)
+    .on('pointermove', (ev, d) => show(items.indexOf(d), false, ev)).on('pointerleave', hide);
+  keyNav(node, items.length, () => cur, show);
+  node.addEventListener('blur', hide);
+}
+
+function chartStack() {
+  const el = $('ch-stack'), w = el.clientWidth, narrow = w < 600;
+  const h = narrow ? 300 : 380, m = { t: 20, r: narrow ? 14 : 132, b: 30, l: 46 };
+  const svg = mk('ch-stack', w, h, `Step chart. BitMine's disclosed ETH holdings rose from 0 to ${fmt(LAST.eth)} between Jun 30, 2025 and ${BIND.asof}, while total ETH supply grew by a net ${fmt(NET)}.`);
+  const x = d3.scaleUtc().domain([dateOf(0), dateOf(K)]).range([m.l, w - m.r]);
+  const y = d3.scaleLinear().domain([0, LAST.eth * 1.08]).nice().range([h - m.b, m.t]);
+  yGrid(svg, y, m.l, w - m.r, y.ticks(narrow ? 4 : 7));
+  xTimeTicks(svg, x, h - m.b + 20, d3.utcMonth.every(narrow ? 6 : 2), m.l, w - m.r);
+  const pts = [{ k: 0, v: 0 }, ...PR.map(p => ({ k: p.k, v: p.eth }))];
+  const X = d => x(dateOf(d.k)), Y = d => y(d.v);
+  svg.append('path').attr('class', 'area-lime').attr('d', d3.area().x(X).y0(y(0)).y1(Y).curve(d3.curveStepAfter)(pts));
+  svg.append('path').attr('class', 'ln ln-lime').attr('d', d3.line().x(X).y(Y).curve(d3.curveStepAfter)(pts));
+  const net = []; for (let k = 0; k <= K; k++) net.push({ k, v: DATA.supply[k] - S0 });
+  svg.append('path').attr('class', 'ln ln-cyan').attr('d', d3.line().x(X).y(Y)(net));
+  const g = svg.append('g');
+  for (let mm = 1; mm <= 40; mm++) {
+    const p = PR.find(q => q.eth >= mm * 1e6); if (!p || p === LAST) break;
+    const cx = x(dateOf(p.k)), cy = y(p.eth);
+    g.append('circle').attr('class', 'mk f-lime').attr('cx', cx).attr('cy', cy).attr('r', 4);
+    if (!narrow) g.append('text').attr('class', 'lbl-2').attr('x', cx - 8).attr('y', cy - 9).attr('text-anchor', 'end').text(`${mm}M · ${dMY(dateOf(p.k))}`);
+  }
+  const ex = x(dateOf(K));
+  if (narrow) {
+    svg.append('text').attr('class', 'lbl').attr('x', ex - 8).attr('y', y(LAST.eth) - 12).attr('text-anchor', 'end').text(`BitMine ${mil(LAST.eth)}`);
+    svg.append('text').attr('class', 'lbl').attr('x', ex - 8).attr('y', y(NET) - 12).attr('text-anchor', 'end').text(`Net new ${mil(NET)}`);
+  } else {
+    endLabel(svg, ex + 14, y(LAST.eth), 'BitMine', fmt(LAST.eth));
+    endLabel(svg, ex + 14, y(NET), 'Net new ETH', fmt(NET));
+  }
+  svg.append('circle').attr('class', 'mk f-lime').attr('cx', ex).attr('cy', y(LAST.eth)).attr('r', 4.5);
+  svg.append('circle').attr('class', 'mk f-cyan').attr('cx', ex).attr('cy', y(NET)).attr('r', 4.5);
+  crosshair(svg, { x0: m.l, x1: w - m.r, y0: m.t, y1: h - m.b }, PR.map(p => p.k), k => x(dateOf(k)), k => {
+    const p = PR[prAt[k]], nn = DATA.supply[k] - S0;
+    return { title: `As of ${dLong(dateOf(k))}`, rows: [
+      { c: 'var(--lime)', l: 'BitMine holds', v: fmt(p.eth) },
+      { l: 'Added this release', v: sgn(p.add) },
+      { c: 'var(--cyan)', l: 'Net new ETH since Jun 30, 2025', v: fmt(nn) },
+      { l: 'Share of all ETH', v: pct(p.share, 3) }
+    ], marks: [{ y: y(p.eth), c: 'var(--lime)' }, { y: y(nn), c: 'var(--cyan)' }] };
+  });
+}
+
+function chartAdds() {
+  const el = $('ch-adds'), w = el.clientWidth, narrow = w < 600;
+  const h = narrow ? 240 : 290, m = { t: 26, r: 14, b: 30, l: 46 };
+  const svg = mk('ch-adds', w, h, `Bar chart of ETH BitMine added per release, peaking at ${fmt(PEAK.add)} in the week to ${BIND.peakdate}, against the network's net new ETH over the same days, about ${BIND.weekly} a week.`);
+  const x = d3.scaleBand().domain(d3.range(PR.length)).range([m.l, w - m.r]).paddingInner(0.3).paddingOuter(0.15);
+  const y = d3.scaleLinear().domain([0, PEAK.add * 1.1]).nice().range([h - m.b, m.t]);
+  yGrid(svg, y, m.l, w - m.r, y.ticks(4));
+  bandMonths(svg, x, PR, p => dateOf(p.k), h - m.b + 20, narrow ? 6 : 2);
+  const bw = Math.min(24, x.bandwidth()), off = (x.bandwidth() - bw) / 2;
+  const bars = svg.append('g').selectAll('path').data(PR).join('path').attr('class', 'f-lime').attr('d', (p, i) => barPath(x(i) + off, y(0), bw, y(p.add), 4));
+  svg.append('path').attr('class', 'ln ln-cyan').attr('d', d3.line().x((p, i) => x(i) + x.bandwidth() / 2).y(p => y(p.netNew))(PR));
+  const pi = PR.indexOf(PEAK), pd = dateOf(PEAK.k);
+  svg.append('text').attr('class', 'lbl').attr('x', x(pi) + off + bw + 8).attr('y', y(PEAK.add)).attr('dy', '0.75em').text(`${fmt(PEAK.add)} · ${MON[pd.getUTCMonth()]} ${pd.getUTCDate()}, ${pd.getUTCFullYear()}`);
+  barHover(svg, PR, i => x(i) - (x.step() - x.bandwidth()) / 2, x.step(), { y0: m.t, y1: h - m.b }, p => ({
+    title: `Released ${dLong(isoD(p.pr))}`,
+    rows: [
+      { l: 'As of', v: dLong(dateOf(p.k)) },
+      { c: 'var(--lime)', box: true, l: 'BitMine added', v: sgn(p.add) },
+      { c: 'var(--cyan)', l: `Network net new (${p.k - p.prevK} days)`, v: sgn(p.netNew) },
+      { l: 'BitMine vs. network', v: (p.add / p.netNew).toFixed(1) + '×' }
+    ] }), bars);
+}
+
+function chartFlows() {
+  const el = $('ch-flows'), w = el.clientWidth, narrow = w < 600;
+  const h = narrow ? 260 : 320, m = { t: 20, r: 14, b: 30, l: 46 };
+  const WK = []; for (let i = 1; i * 7 <= K; i++) WK.push({ k0: 7 * (i - 1), k1: 7 * i, iss: DATA.iss[7 * i] - DATA.iss[7 * (i - 1)], brn: DATA.burn[7 * i] - DATA.burn[7 * (i - 1)] });
+  const maxI = d3.max(WK, d => d.iss), maxB = d3.max(WK, d => d.brn);
+  const svg = mk('ch-flows', w, h, `Weekly bars: about ${fmt(maxI)} ETH minted at most per week, against at most ${fmt(maxB)} ETH burned per week.`);
+  const x = d3.scaleBand().domain(d3.range(WK.length)).range([m.l, w - m.r]).paddingInner(0.3).paddingOuter(0.15);
+  const lo = -Math.max(2500, Math.ceil(maxB * 1.3 / 2500) * 2500), hi = Math.ceil(maxI * 1.12 / 5000) * 5000;
+  const y = d3.scaleLinear().domain([lo, hi]).range([h - m.b, m.t]);
+  yGrid(svg, y, m.l, w - m.r, y.ticks(6));
+  bandMonths(svg, x, WK, d => dateOf(d.k0 + 1), h - m.b + 20, narrow ? 6 : 2);
+  const bw = Math.min(24, x.bandwidth()), off = (x.bandwidth() - bw) / 2, y0 = y(0);
+  const up = svg.append('g').selectAll('path').data(WK).join('path').attr('class', 'f-cyan').attr('d', (d, i) => barPath(x(i) + off, y0 - 1, bw, y(d.iss), 4));
+  const dn = svg.append('g').selectAll('path').data(WK).join('path').attr('class', 'f-ember').attr('d', (d, i) => barPath(x(i) + off, y0 + 1, bw, Math.max(y0 + 1, y(-d.brn)), 3));
+  svg.append('line').attr('class', 'axis-line').attr('x1', m.l).attr('x2', w - m.r).attr('y1', Math.round(y0) + 0.5).attr('y2', Math.round(y0) + 0.5);
+  const bi = WK.findIndex(d => d.brn === maxB), a = dateOf(WK[bi].k0 + 1), b = dateOf(WK[bi].k1);
+  svg.append('text').attr('class', 'lbl-2').attr('x', x(bi) + off + bw + 6).attr('y', y(-maxB)).attr('dy', '0.32em').text(`−${fmt(maxB)} · ${MON[a.getUTCMonth()]} ${a.getUTCDate()}–${b.getUTCDate()}, ${b.getUTCFullYear()}`);
+  const rng = d => { const a = dateOf(d.k0 + 1), b = dateOf(d.k1); return `${MON[a.getUTCMonth()]} ${a.getUTCDate()} – ${MON[b.getUTCMonth()]} ${b.getUTCDate()}, ${b.getUTCFullYear()}`; };
+  barHover(svg, WK, i => x(i) - (x.step() - x.bandwidth()) / 2, x.step(), { y0: m.t, y1: h - m.b }, d => ({
+    title: `Week of ${rng(d)}`,
+    rows: [
+      { c: 'var(--cyan)', box: true, l: 'Minted', v: sgn(d.iss) },
+      { c: 'var(--ember)', box: true, l: 'Burned', v: sgn(-d.brn) },
+      { l: 'Net change', v: sgn(d.iss - d.brn) }
+    ] }), d3.selectAll([...up.nodes(), ...dn.nodes()]));
+}
+
+function chartLedger() {
+  const el = $('ch-ledger'), w = el.clientWidth, narrow = w < 600;
+  const g0 = LG.crowdsale + LG.genesisOther, pow = LG.powBlock + LG.powUncle, a2 = g0 + pow, a3 = a2 + LG.pos;
+  const rows = [
+    { name: 'Created at launch, 2015', note: `${mil(LG.crowdsale, 1)} crowdsale + ${mil(LG.genesisOther)} other`, a: 0, b: g0, cls: 'f-violet', val: mil(g0), ex: fmt(g0) },
+    { name: 'Mined under proof-of-work, 2015–2022', note: `${mil(LG.powBlock)} block + ${mil(LG.powUncle)} uncle rewards`, a: g0, b: a2, cls: 'f-violet', val: '+' + mil(pow), ex: '+' + fmt(pow) },
+    { name: 'Minted by proof-of-stake since Dec 2020', note: 'staking rewards', a: a2, b: a3, cls: 'f-cyan', val: '+' + mil(LG.pos), ex: '+' + fmt(LG.pos) },
+    { name: 'Burned by EIP-1559 since Aug 2021', note: 'base fees destroyed', a: a3, b: LG.total, cls: 'f-ember', val: '−' + mil(LG.burnt), ex: '−' + fmt(LG.burnt) },
+    { name: 'ETH in existence today', note: `Etherscan, ${BIND.ledgerAsof}`, a: 0, b: LG.total, cls: 'f-violet', val: mil(LG.total), ex: fmt(LG.total), bm: LAST.eth }
+  ];
+  const rowH = 60, m = { t: 6, r: narrow ? 60 : 74, b: 28, l: 2 }, h = m.t + rows.length * rowH + m.b;
+  const svg = mk('ch-ledger', w, h, `Waterfall: ${mil(g0)} ETH at launch, plus ${mil(pow)} mined, plus ${mil(LG.pos)} in staking rewards, minus ${mil(LG.burnt)} burned, equals ${mil(LG.total)} ETH, of which BitMine holds ${mil(LAST.eth)}.`);
+  const x = d3.scaleLinear().domain([0, Math.ceil(a3 * 1.02 / 25e6) * 25e6]).range([m.l, w - m.r]);
+  for (const v of x.ticks(narrow ? 3 : 6)) {
+    const px = Math.round(x(v)) + 0.5;
+    svg.append('line').attr('class', v === 0 ? 'axis-line' : 'grid-line').attr('x1', px).attr('x2', px).attr('y1', m.t).attr('y2', h - m.b);
+    svg.append('text').attr('class', 'tick').attr('x', px).attr('y', h - m.b + 18).attr('text-anchor', v === 0 ? 'start' : 'middle').text(axisFmt(v));
+  }
+  const marks = [];
+  rows.forEach((r, i) => {
+    const top = m.t + i * rowH, by = top + 32, bh = 14, x0 = x(Math.min(r.a, r.b)), x1 = x(Math.max(r.a, r.b));
+    svg.append('text').attr('class', 'row-name').attr('x', m.l).attr('y', top + 13).text(r.name);
+    svg.append('text').attr('class', 'row-note').attr('x', m.l).attr('y', top + 27).text(r.note);
+    if (r.bm) {
+      const xs = x(r.b - r.bm);
+      marks.push(svg.append('rect').datum(r).attr('class', r.cls).attr('x', x0).attr('y', by).attr('width', Math.max(0, xs - 1 - x0)).attr('height', bh).attr('rx', 2).node());
+      marks.push(svg.append('rect').datum(r).attr('class', 'f-lime').attr('x', xs + 1).attr('y', by).attr('width', Math.max(1, x1 - xs - 1)).attr('height', bh).attr('rx', 2).node());
+      svg.append('text').attr('class', 'lbl-2').attr('x', x1).attr('y', top + 27).attr('text-anchor', 'end').text(`BitMine ${mil(r.bm)}`);
+    } else marks.push(svg.append('rect').datum(r).attr('class', r.cls).attr('x', x0).attr('y', by).attr('width', Math.max(1, x1 - x0)).attr('height', bh).attr('rx', 2).node());
+    svg.append('text').attr('class', 'lbl').attr('x', x1 + 8).attr('y', by + bh / 2).attr('dy', '0.35em').text(r.val);
+    if (!narrow && i < rows.length - 2) svg.append('line').attr('class', 'conn').attr('x1', x(r.b)).attr('x2', x(r.b)).attr('y1', by + bh).attr('y2', by + rowH);
+  });
+  const node = svg.node(); let cur = -1;
+  const sel = d3.selectAll(marks);
+  const hide = () => { sel.classed('lift', false); tip.hide(); cur = -1; };
+  function show(i, kb, ev) {
+    cur = i; const r = rows[i]; sel.classed('lift', d => d === r);
+    const rs = [{ l: 'ETH', v: r.ex }];
+    if (r.bm) rs.push({ c: 'var(--lime)', box: true, l: 'BitMine holds', v: fmt(r.bm) }, { l: 'BitMine share', v: pct(r.bm / LG.total, 2) });
+    if (kb) { const b = node.getBoundingClientRect(); tip.show(b.left + x(Math.max(r.a, r.b)), b.top + m.t + i * rowH + 20, r.name, rs); }
+    else tip.show(ev.clientX, ev.clientY, r.name, rs);
+  }
+  svg.append('g').selectAll('rect').data(rows).join('rect').attr('class', 'hit').attr('x', 0).attr('width', w).attr('y', (d, i) => m.t + i * rowH).attr('height', rowH)
+    .on('pointermove', (ev, d) => show(rows.indexOf(d), false, ev)).on('pointerleave', hide);
+  keyNav(node, rows.length, () => cur, show);
+  node.addEventListener('blur', hide);
+}
+
+function chartLong() {
+  const el = $('ch-long'), w = el.clientWidth, narrow = w < 600;
+  const h = narrow ? 260 : 320, m = { t: 30, r: narrow ? 14 : 78, b: 30, l: 54 };
+  const st = Date.parse(DATA.long.start + 'T00:00:00Z');
+  const pts = DATA.long.v.map((v, i) => ({ d: new Date(st + i * 7 * DAY), v }));
+  const svg = mk('ch-long', w, h, `Line chart of total ETH supply from ${mil(pts[0].v)} in August 2021 to ${mil(pts[pts.length - 1].v)} on ${BIND.asof}.`);
+  const x = d3.scaleUtc().domain([pts[0].d, pts[pts.length - 1].d]).range([m.l, w - m.r]);
+  const y = d3.scaleLinear().domain(d3.extent(pts, p => p.v)).nice().range([h - m.b, m.t]);
+  yGrid(svg, y, m.l, w - m.r, y.ticks(narrow ? 4 : 6));
+  xTimeTicks(svg, x, h - m.b + 20, d3.utcYear.every(1), m.l, w - m.r, d => String(d.getUTCFullYear()));
+  const ex0 = x(dateOf(1)), ex1 = w - m.r;
+  svg.append('rect').attr('class', 'era').attr('x', ex0).attr('y', m.t).attr('width', Math.max(0, ex1 - ex0)).attr('height', h - m.b - m.t);
+  svg.append('text').attr('class', 'lbl-2').attr('x', ex0 + 6).attr('y', m.t + 14).text('BitMine buying');
+  [['2021-08-05', 'Burn begins'], ['2022-09-15', 'The Merge'], ['2024-03-13', 'Dencun']].forEach(([iso, label]) => {
+    const px = x(isoD(iso)); if (px < m.l - 1 || px > w - m.r) return;
+    svg.append('line').attr('class', 'evt').attr('x1', px).attr('x2', px).attr('y1', m.t - 16).attr('y2', h - m.b);
+    svg.append('text').attr('class', 'lbl-2').attr('x', px + 5).attr('y', m.t - 8).text(label);
+  });
+  svg.append('path').attr('class', 'ln ln-violet').attr('d', d3.line().x(p => x(p.d)).y(p => y(p.v))(pts));
+  const merge = isoD('2022-09-15');
+  const low = pts.filter(p => p.d >= merge).reduce((a, b) => (b.v < a.v ? b : a));
+  svg.append('circle').attr('class', 'mk f-violet').attr('cx', x(low.d)).attr('cy', y(low.v)).attr('r', 4);
+  svg.append('text').attr('class', 'lbl-2').attr('x', x(low.d)).attr('y', y(low.v) + 18).attr('text-anchor', 'middle').text(`${mil(low.v)} low · ${MON[low.d.getUTCMonth()]} ${low.d.getUTCFullYear()}`);
+  const lp = pts[pts.length - 1];
+  svg.append('circle').attr('class', 'mk f-violet').attr('cx', x(lp.d)).attr('cy', y(lp.v)).attr('r', 4.5);
+  if (narrow) svg.append('text').attr('class', 'lbl').attr('x', x(lp.d) - 8).attr('y', y(lp.v) - 12).attr('text-anchor', 'end').text(mil(lp.v));
+  else endLabel(svg, x(lp.d) + 14, y(lp.v), 'Today', mil(lp.v));
+  crosshair(svg, { x0: m.l, x1: w - m.r, y0: m.t, y1: h - m.b }, pts.map((p, i) => i), i => x(pts[i].d), i => ({
+    title: dLong(pts[i].d),
+    rows: [{ c: 'var(--violet)', l: 'ETH in existence', v: fmt(pts[i].v) }],
+    marks: [{ y: y(pts[i].v), c: 'var(--violet)' }]
+  }));
+}
+
+function table() {
+  const rows = [...PR].reverse().map(p => {
+    const tr = document.createElement('tr');
+    const vals = [dLong(isoD(p.pr)), dLong(dateOf(p.k)), fmt(p.eth), sgn(p.add), '$' + NF.format(Math.round(p.px)), pct(p.share, 3), p.stated ? p.stated + (p.denom ? ` of ${p.denom}` : '') : '—', p.staked != null ? fmt(p.staked) : '—'];
+    for (const v of vals) { const td = document.createElement('td'); td.textContent = v; tr.appendChild(td); }
+    const td = document.createElement('td'); td.className = 'src';
+    const a = document.createElement('a'); a.href = p.url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Release ↗';
+    td.appendChild(a); tr.appendChild(td);
+    return tr;
+  });
+  $('tbody').replaceChildren(...rows);
+}
+
+function charts() {
+  if (!window.d3) return;
+  for (const f of [chartStack, chartAdds, chartFlows, chartLedger, chartLong]) { try { f(); } catch (e) { console.error(e); } }
+}
+table();
+charts();
+let cw = 0, ct = 0;
+new ResizeObserver(() => { const w = $('chapters').clientWidth; if (w === cw) return; cw = w; clearTimeout(ct); ct = setTimeout(charts, 120); }).observe($('chapters'));
+})();
+</script>
+
+</body>
+</html>
