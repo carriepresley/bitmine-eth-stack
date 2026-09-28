@@ -15,7 +15,8 @@ Also reads
 Outputs
   artifact.html        page fragment published to the Claude artifact
                        (the artifact host adds <html>/<head>/<body> itself)
-  index.html           the same page as a standalone document (GitHub Pages, local preview)
+  index.html           the same page as a standalone document with link-preview tags
+                       (served by Vercel; also works as a local preview)
   data/site_data.json  the exact data embedded in the page
 """
 import csv
@@ -28,6 +29,36 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 BASE = dt.date(2025, 6, 29)       # day 0 = end of Jun 29, 2025; BitMine announced its ETH treasury Jun 30
 CM = "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics"
+SITE = "https://bitmine-eth-stack.vercel.app"   # public address; link previews need absolute URLs
+FAVICON = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E"
+           "%3Crect width='32' height='32' rx='7' fill='%2305050B'/%3E"
+           "%3Crect x='10' y='10' width='12' height='12' fill='%23C6FF00'/%3E%3C/svg%3E")
+
+
+def social_head(eth, share):
+    """Link-preview tags for the standalone page (X, LinkedIn, iMessage, Slack)."""
+    title = "BitMine's ETH Stack"
+    desc = (f"BitMine holds {eth:,} ETH, {share:.2f}% of all the ETH in existence. "
+            "Watch every weekly disclosure since June 2025 stack up, "
+            "plus a live estimate of its staking rewards.")
+    tags = [
+        f'<link rel="canonical" href="{SITE}/">',
+        f'<link rel="icon" href="{FAVICON}">',
+        '<meta name="theme-color" content="#05050B">',
+        '<meta property="og:type" content="website">',
+        f'<meta property="og:url" content="{SITE}/">',
+        f'<meta property="og:title" content="{title}">',
+        f'<meta property="og:description" content="{desc}">',
+        f'<meta property="og:image" content="{SITE}/og.jpg">',
+        '<meta property="og:image:width" content="1200">',
+        '<meta property="og:image:height" content="630">',
+        '<meta property="og:image:alt" content="An orb of dots for the whole ETH supply, with BitMine\'s share pulled out into a stack of lime blocks.">',
+        '<meta name="twitter:card" content="summary_large_image">',
+        f'<meta name="twitter:title" content="{title}">',
+        f'<meta name="twitter:description" content="{desc}">',
+        f'<meta name="twitter:image" content="{SITE}/og.jpg">',
+    ]
+    return "\n".join(tags) + "\n"
 
 
 def cm_series(metrics, start, end):
@@ -106,13 +137,14 @@ def main():
         sys.exit("src/page.html must contain exactly one /*__DATA__*/null and one <!--BODY--> marker")
     frag = tpl.replace("/*__DATA__*/null", blob)
     (ROOT / "artifact.html").write_text(frag)
+    last = prs[-1]
     head, body = frag.split("<!--BODY-->", 1)
     doc = ("<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n"
-           + head + "</head>\n<body>\n" + body + "\n</body>\n</html>\n")
+           + head + social_head(last[4], last[4] / supply[-1] * 100)
+           + "</head>\n<body>\n" + body + "\n</body>\n</html>\n")
     (ROOT / "index.html").write_text(doc)
 
-    last = prs[-1]
     print(f"Built {len(prs)} releases through {last[2]}: {last[4]:,} ETH = "
           f"{last[4] / supply[-1] * 100:.3f}% of {supply[-1]:,} ETH | "
           f"since Jun 30, 2025: minted {iss[-1]:,}, burned {burn[-1]:,}, net {supply[-1] - supply[0]:,}")

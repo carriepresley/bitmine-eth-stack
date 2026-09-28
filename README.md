@@ -2,8 +2,8 @@
 
 A time-lapse of BitMine Immersion Technologies (BMNR) building its ETH position since it announced its ETH treasury strategy on June 30, 2025. The whole ETH supply is drawn as dots of 10,000 ETH, and a scrubbable timeline shows the stack growing. A second section gives a live estimate of the staking rewards BitMine earns.
 
-- Page (Claude artifact): https://claude.ai/artifact/8UXbyDDUSZaJFwTEh9r5wr. It's private until shared from the page's Share menu.
-- Public page: Vercel, deployed from this repo's `main` branch.
+- Public page: https://bitmine-eth-stack.vercel.app. Vercel deploys it from this repo's `main` branch on every push.
+- Claude artifact copy: https://claude.ai/artifact/8UXbyDDUSZaJFwTEh9r5wr. It's private until shared from the page's Share menu.
 - Updated every Monday after BitMine's weekly holdings release, with a Tuesday catch-up for holiday weeks. See `UPDATING.md`.
 
 ## Files
@@ -12,9 +12,12 @@ A time-lapse of BitMine Immersion Technologies (BMNR) building its ETH position 
 | --- | --- |
 | `data/holdings.csv` | One row per BitMine ETH-holdings release, Jul 14, 2025 onward, with staked ETH, staking yield and the release URL. The source of truth. |
 | `data/network.json` | Total ETH staked network-wide (from ultrasound.money), refreshed on every build. |
+| `data/holders.json` | The next five largest ETH holders (ETFs and company treasuries), each with its own date and source. They're shown as colored slices of the orb at the latest week. |
 | `src/page.html` | The page template. The build injects the data at `/*__DATA__*/null`. |
 | `scripts/build.py` | Pulls daily ETH supply and issuance from Coin Metrics and builds the page. Standard library only. |
-| `index.html` | The built page as a standalone document. Vercel serves this. |
+| `index.html` | The built page as a standalone document, with link-preview tags. Vercel serves this. |
+| `og.jpg` | The 1200×630 link-preview image. It shows no weekly numbers, so it doesn't need a weekly refresh. |
+| `scripts/og_image.py` | Optional. Re-renders `og.jpg` from the built page with Playwright, e.g. after a redesign. |
 | `artifact.html` | The same page as a fragment for the Claude artifact, which adds `<html>`, `<head>` and `<body>` itself. |
 | `data/site_data.json` | The exact data embedded in the built page. |
 | `UPDATING.md` | The weekly update procedure. |
