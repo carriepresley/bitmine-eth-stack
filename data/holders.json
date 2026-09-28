@@ -1,0 +1,17 @@
+{
+  "asOf": "2026-09-28",
+  "note": "Largest ETH holders after BitMine among ETFs and company treasuries. Exchanges' customer balances, bridges and the staking deposit contract are left out.",
+  "list": [
+    {"short": "BlackRock ETHA", "name": "iShares Ethereum Trust (BlackRock)", "type": "ETF", "eth": 3654069, "asOf": "2026-09-25",
+     "source": "https://www.ishares.com/us/products/337614/ishares-ethereum-trust-etf",
+     "method": "Basket ether amount 301.69 ETH per 40,000 shares x 484,480,000 shares outstanding (iShares, Sep 25, 2026)"},
+    {"short": "Grayscale ETHE + ETH", "name": "Grayscale Ethereum Staking ETF (ETHE) and Mini ETF (ETH)", "type": "ETF", "eth": 1607394, "asOf": "2026-09-04",
+     "source": "https://www.coinglass.com/etf/ethereum", "method": "CoinGlass holdings: ETH 877,210.54 + ETHE 730,183.56"},
+    {"short": "SharpLink (SBET)", "name": "SharpLink", "type": "Company", "eth": 868699, "asOf": "2026-09-28",
+     "source": "https://www.coingecko.com/en/treasuries/ethereum", "method": "CoinGecko public treasury tracker"},
+    {"short": "Fidelity FETH", "name": "Fidelity Ethereum Fund", "type": "ETF", "eth": 546220, "asOf": "2026-09-04",
+     "source": "https://www.coinglass.com/etf/ethereum", "method": "CoinGlass holdings: 546,219.63"},
+    {"short": "Ether Machine (ETHM)", "name": "The Ether Machine", "type": "Company", "eth": 496712, "asOf": "2026-09-28",
+     "source": "https://www.coingecko.com/en/treasuries/ethereum", "method": "CoinGecko public treasury tracker"}
+  ]
+}

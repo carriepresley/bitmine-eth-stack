@@ -68,6 +68,8 @@ h1 .hl{color:var(--lime);text-shadow:0 0 30px rgba(198,255,0,.35)}
 .toast{position:absolute;left:50%;top:8px;transform:translate(-50%,-6px);opacity:0;transition:opacity .25s ease,transform .25s ease;pointer-events:none;max-width:calc(100% - 16px);padding:8px 12px;border:1px solid rgba(198,255,0,.55);background:rgba(5,5,11,.9);font:500 11px/1.4 var(--f-mono);letter-spacing:.04em;color:var(--ink);text-align:center;box-shadow:0 0 24px rgba(198,255,0,.16)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .toast .td{color:var(--ink-3);margin-right:10px}
+.viz.toasting #lab-orb{opacity:0}
+#lab-orb{transition:opacity .2s}
 
 /* transport + timeline */
 .transport{display:grid;gap:12px;padding-block:6px 32px}
@@ -96,6 +98,16 @@ h1 .hl{color:var(--lime);text-shadow:0 0 30px rgba(198,255,0,.35)}
 .legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:4px;font:500 10px/1.4 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
 .legend span{display:inline-flex;align-items:center;gap:8px}
 .legend .dim{color:var(--ink-3)}
+.holders{border-top:1px solid rgba(140,112,255,.18);padding-top:12px;margin-top:2px}
+.holders.off .h-list{opacity:.5}
+.h-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+.h-title{font:500 10px/1.4 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.h-toggle{display:inline-flex;align-items:center;gap:6px;font:500 10px/1.4 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);cursor:pointer}
+.h-toggle input{margin:0;accent-color:var(--lime)}
+.h-list{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:10px;font:500 11px/1.4 var(--f-mono);color:var(--ink-2)}
+.h-item{display:inline-flex;align-items:center;gap:8px}
+.h-item b{color:var(--ink);font-weight:500}
+.h-note{margin:8px 0 0;font:400 11.5px/1.5 var(--f-body);color:var(--ink-3)}
 @media (max-width:640px){.track{height:76px}#scrub::-webkit-slider-thumb{height:76px}#scrub::-moz-range-thumb{height:76px}}
 
 /* ---------- staking ---------- */
@@ -170,7 +182,7 @@ td.src a{color:var(--ink-2)}
       <div class="cell"><div class="k">Left to reach 5%</div><div class="v" id="h-to5">102,792</div></div>
     </div>
 
-    <div class="viz" id="viz" role="img" aria-label="Animated view of the ETH supply in dots of 10,000 ETH. The orb holds everyone else's ETH; the block stack beside it is BitMine's, just under a line marking 5% of all ETH. The ring is marked in 5% steps.">
+    <div class="viz" id="viz" role="img" aria-label="Animated view of the ETH supply in dots of 10,000 ETH. The orb holds everyone else's ETH; the block stack beside it is BitMine's, just under a line marking 5% of all ETH. The ring is marked in 5% steps. At the latest week, the next-largest holders appear as colored slices of the orb.">
       <div class="vlabel" id="lab-orb">All other ETH · 1 dot = 10,000 ETH</div>
       <div class="vlabel" id="lab-vault">BitMine · 1 block = 10,000 ETH</div>
       <div class="vlabel" id="lab-5">5% of all ETH</div>
@@ -202,6 +214,11 @@ td.src a{color:var(--ink-2)}
         <span><i class="sw cyan"></i>New ETH minted since Jun 30, 2025</span>
         <span><i class="sw ember"></i>Burned (flashes out)</span>
         <span class="dim">1 dot or block = 10,000 ETH</span>
+      </div>
+      <div class="holders" id="holders">
+        <div class="h-head"><span class="h-title">Largest holders</span><label class="h-toggle"><input type="checkbox" id="h-show" checked> Show on the orb</label></div>
+        <div class="h-list" id="h-list"></div>
+        <p class="h-note" id="h-note"></p>
       </div>
     </div>
   </div>
@@ -256,6 +273,7 @@ td.src a{color:var(--ink-2)}
         <li><a href="https://docs.coinmetrics.io/" target="_blank" rel="noopener">Coin Metrics Community API</a>: daily ETH supply and issuance.</li>
         <li><a href="https://ultrasound.money" target="_blank" rel="noopener">ultrasound.money</a>: live network staking total; burn totals as a cross-check.</li>
         <li><a href="https://www.coinbase.com/price/ethereum" target="_blank" rel="noopener">Coinbase</a>: live ETH price.</li>
+        <li>Other large holders: <a href="https://www.ishares.com/us/products/337614/ishares-ethereum-trust-etf" target="_blank" rel="noopener">iShares</a> (ETHA), <a href="https://www.coinglass.com/etf/ethereum" target="_blank" rel="noopener">CoinGlass</a> (Grayscale and Fidelity ETF holdings) and the <a href="https://www.coingecko.com/en/treasuries/ethereum" target="_blank" rel="noopener">CoinGecko treasury tracker</a> (SharpLink, The Ether Machine).</li>
       </ol>
     </div>
     <div>
@@ -333,6 +351,10 @@ const Scene = (() => {
   let seed = 20250630; const rnd = () => (seed = (seed * 48271) % 2147483647) / 2147483647;
   for (let i = 0; i < NMAX; i++) { const r = Math.sqrt((i + 0.5) / NMAX), a = (i * GA) % TAU; ux[i] = r * Math.cos(a); uy[i] = r * Math.sin(a); ang[i] = a; bucket[i] = (rnd() * 4) | 0; }
   const state = new Uint8Array(NMAX); // 0 empty · 1 ETH · 2 minted · 3 queued for BitMine
+  const HOLD = ((DATA.holders && DATA.holders.list) || []).slice(0, 6);
+  const HCOL = ['#F5A524', '#F0509C', '#2FD39A', '#FF7A45', '#58B7FF', '#E4E2F2'];
+  const holderOf = new Uint8Array(NMAX);
+  let showHold = true, holdOn = false;
   const lit = new Uint8Array(CAPN), litAt = new Float64Array(CAPN);
   let wedge, issueO, burnO, L = null, W = 0, H = 0, dpr = 1, stars = [];
   let stackN = 0, issN = 0, burnN = 0, flights = [], fx = [], orbDirty = true;
@@ -352,6 +374,18 @@ const Scene = (() => {
     const b = [], seen = new Set(); let guard = 0;
     while (b.length < BRN_MAX + 12 && guard++ < 200000) { const i = (r2() * N0) | 0; if (!seen.has(i) && Math.abs(rel(i, dir)) > 0.6 && ux[i] * ux[i] + uy[i] * uy[i] > 0.1) { seen.add(i); b.push(i); } }
     burnO = Int32Array.from(b);
+    // other large holders: consecutive slices of the orb, starting at the upper edge of BitMine's gap (latest week)
+    holderOf.fill(0);
+    if (HOLD.length) {
+      const taken = new Uint8Array(NMAX), stackK = Math.min(wedge.length, CAPN, Math.round(holdAt[K] / 1e4)), burnK = Math.min(burnO.length, Math.max(0, Math.round(DATA.burn[K] / 1e4)));
+      for (let j = 0; j < stackK; j++) taken[wedge[j]] = 1;
+      for (let j = 0; j < burnK; j++) taken[burnO[j]] = 1;
+      const half = Math.PI * holdAt[K] / DATA.supply[K], cand = [], tOf = new Float64Array(N0);
+      for (let i = 0; i < N0; i++) { if (taken[i]) continue; let t = (-half - rel(i, dir)) % TAU; if (t < 0) t += TAU; tOf[i] = t; cand.push(i); }
+      cand.sort((p1, p2) => tOf[p1] - tOf[p2]);
+      let pos = 0;
+      HOLD.forEach((h, hi) => { const n = Math.round(h.eth / 1e4); for (let j = 0; j < n && pos < cand.length; j++) holderOf[cand[pos++]] = hi + 1; });
+    }
   }
 
   const viewK = () => Math.max(1, Math.min(K, Math.floor(t)));
@@ -460,6 +494,8 @@ const Scene = (() => {
     drawStars(c, now);
     drawTerrain(c, now);
     drawRing(c);
+    const hv = showHold && HOLD.length > 0 && kDone >= K && !playing && !flights.length;
+    if (hv !== holdOn) { holdOn = hv; orbDirty = true; holdKey.classList.toggle('off', !holdOn); }
     if (orbDirty) { renderOrb(); orbDirty = false; }
     const pad = 16;
     c.drawImage(orbCv, L.cx - L.R - pad, L.cy - L.R - pad, (L.R + pad) * 2, (L.R + pad) * 2);
@@ -513,6 +549,10 @@ const Scene = (() => {
     c.beginPath(); c.arc(cx, cy, R, 0, TAU); c.stroke();
     const half = disp / DATA.supply[viewK()] * Math.PI;
     if (half > 0.0005) { c.strokeStyle = '#C6FF00'; c.lineWidth = 3.2; c.shadowColor = 'rgba(198,255,0,0.95)'; c.shadowBlur = 16; c.beginPath(); c.arc(cx, cy, R, dir - half, dir + half); c.stroke(); }
+    if (holdOn) {
+      let a0 = dir - half; c.lineWidth = 3; c.shadowBlur = 10;
+      HOLD.forEach((h, hi) => { const span = TAU * h.eth / DATA.supply[K]; c.strokeStyle = HCOL[hi]; c.shadowColor = HCOL[hi]; c.beginPath(); c.arc(cx, cy, R, a0 - span + 0.004, a0 - 0.004); c.stroke(); a0 -= span; });
+    }
     c.shadowBlur = 0; c.strokeStyle = 'rgba(198,255,0,0.6)'; c.lineWidth = 1.2; c.beginPath();
     for (const s of [-1, 1]) { const a = dir + s * Math.PI * 0.05; c.moveTo(cx + Math.cos(a) * (R - 6), cy + Math.sin(a) * (R - 6)); c.lineTo(cx + Math.cos(a) * (R + 18), cy + Math.sin(a) * (R + 18)); }
     c.stroke();
@@ -528,10 +568,13 @@ const Scene = (() => {
     g.addColorStop(0, 'rgba(140,112,255,0.16)'); g.addColorStop(0.7, 'rgba(140,112,255,0.05)'); g.addColorStop(1, 'rgba(140,112,255,0)');
     c.fillStyle = g; c.beginPath(); c.arc(cx, cy, R * 1.04, 0, TAU); c.fill();
     const halo = new Path2D(), B = [new Path2D(), new Path2D(), new Path2D(), new Path2D()], mint = new Path2D(), mintH = new Path2D(), q = new Path2D();
+    const HP = HOLD.map(() => new Path2D()), HH = HOLD.map(() => new Path2D()), hz = s * 1.15, hzo = hz / 2;
     for (let i = 0; i < NMAX; i++) {
       const st = state[i]; if (!st) continue;
       const x = cx + ux[i] * R, y = cy + uy[i] * R;
-      if (st === 1) { halo.rect(x - ho, y - ho, hs, hs); B[bucket[i]].rect(x - so, y - so, s, s); }
+      const h = st === 1 && holdOn ? holderOf[i] : 0;
+      if (h) { HH[h - 1].rect(x - ho, y - ho, hs, hs); HP[h - 1].rect(x - hzo, y - hzo, hz, hz); }
+      else if (st === 1) { halo.rect(x - ho, y - ho, hs, hs); B[bucket[i]].rect(x - so, y - so, s, s); }
       else if (st === 2) { mintH.rect(x - mho, y - mho, mh, mh); mint.rect(x - mo, y - mo, ms, ms); }
       else q.rect(x - mo, y - mo, ms, ms);
     }
@@ -543,6 +586,10 @@ const Scene = (() => {
     for (let b = 0; b < 4; b++) { c.fillStyle = cols[b]; c.fill(B[b]); }
     c.fillStyle = '#1C9FD6'; c.fill(mint);
     c.fillStyle = '#C6FF00'; c.fill(q);
+    HOLD.forEach((h, hi) => {
+      c.globalCompositeOperation = 'lighter'; c.globalAlpha = 0.12; c.fillStyle = HCOL[hi]; c.fill(HH[hi]);
+      c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1; c.fill(HP[hi]);
+    });
   }
 
   function sparkle(c) {
@@ -641,8 +688,8 @@ const Scene = (() => {
   function toast(k, text) {
     const d = document.createElement('span'); d.className = 'td'; d.textContent = dHud(dateOf(k));
     const x = document.createElement('span'); x.textContent = text;
-    toastEl.replaceChildren(d, x); toastEl.classList.add('on');
-    clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove('on'), speed > 10 ? 1600 : 2600);
+    toastEl.replaceChildren(d, x); toastEl.classList.add('on'); viz.classList.add('toasting');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { toastEl.classList.remove('on'); viz.classList.remove('toasting'); }, speed > 10 ? 1600 : 2600);
   }
 
   const btn = $('play'), lbl = $('play-lbl'), icoPlay = $('ico-play'), icoPause = $('ico-pause');
@@ -709,6 +756,20 @@ const Scene = (() => {
     c.fillText(label, px + 8 + lw > TW - 4 ? px - 8 - lw : px + 8, 5);
   }
 
+  const holdKey = $('holders');
+  if (!HOLD.length) holdKey.hidden = true;
+  else {
+    const items = [{ short: 'BitMine (BMNR)', eth: holdAt[K], col: '#C6FF00', asOf: LAST.asof }].concat(HOLD.map((h, hi) => Object.assign({}, h, { col: HCOL[hi] })));
+    $('h-list').replaceChildren(...items.map(it => {
+      const el = document.createElement('span'); el.className = 'h-item'; el.title = `${fmt(it.eth)} ETH, as of ${dLong(isoD(it.asOf))}`;
+      const sw = document.createElement('i'); sw.className = 'sw'; sw.style.background = it.col;
+      const nm = document.createElement('span'); nm.textContent = it.short;
+      const v = document.createElement('b'); v.textContent = (it.eth / 1e6).toFixed(2) + 'M';
+      el.append(sw, nm, v); return el;
+    }));
+    $('h-note').textContent = 'Shown on the orb at the latest week. ETFs and company treasuries only; exchanges\u2019 customer balances are left out. Hover a name for its date.';
+    $('h-show').addEventListener('change', e => { showHold = e.target.checked; touched = true; kick(); });
+  }
   new IntersectionObserver(es => { inView = es[0].isIntersecting; if (inView) kick(); }, { threshold: 0.02 }).observe(sec);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) kick(); });
   let rt = 0; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(layout, 100); }).observe(sec);

@@ -9,6 +9,9 @@ Fetched
   Coin Metrics Community API: daily ETH supply (SplyCur) and issuance (IssTotNtv)
   ultrasound.money: network-wide staked ETH (best effort; falls back to data/network.json)
 
+Also reads
+  data/holders.json  the next-largest ETH holders (ETFs, company treasuries) shown on the orb
+
 Outputs
   artifact.html        page fragment published to the Claude artifact
                        (the artifact host adds <html>/<head>/<body> itself)
@@ -91,8 +94,10 @@ def main():
                     float(r["staking_yield"]) if r.get("staking_yield") else None])
 
     network = network_staked()
+    hf = ROOT / "data/holders.json"
+    holders = json.loads(hf.read_text()) if hf.exists() else None
     out = {"asOf": rows[-1]["pr_date"], "base": BASE.isoformat(),
-           "supply": supply, "iss": iss, "burn": burn, "prs": prs, "network": network}
+           "supply": supply, "iss": iss, "burn": burn, "prs": prs, "network": network, "holders": holders}
     blob = json.dumps(out, separators=(",", ":"))
     (ROOT / "data/site_data.json").write_text(blob + "\n")
 
